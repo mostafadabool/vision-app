@@ -23,8 +23,12 @@
 *{box-sizing:border-box;min-width:0}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "IBM Plex Sans Arabic",Tahoma,sans-serif;overflow-x:clip;padding-bottom:84px}
 header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;padding:12px 16px;background:#0b2a4a;color:#fff}
-header .logo{font-weight:700;font-size:20px;letter-spacing:0}header .logo small{display:block;font-size:12px;font-weight:400;opacity:.75}
-header .dev{margin-inline-start:auto;text-align:end;font-size:13px}
+header .logo{font-weight:700;font-size:18px;letter-spacing:0;white-space:nowrap;line-height:1.15}header .logo small{display:block;font-size:11px;font-weight:400;opacity:.75}
+header .dev{text-align:end;font-size:13px;white-space:nowrap;min-width:0;max-width:34vw;overflow:hidden;text-overflow:ellipsis}
+header .dev br{display:none}header .dev{display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;column-gap:4px;line-height:1.3}header .dev #devname{flex-basis:100%;text-align:end;display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom}
+header{padding:10px 12px;gap:8px}
+.hctl{margin-inline-start:auto;display:flex;gap:6px}
+.hb{min-height:34px;min-width:38px;padding:0 8px;border-radius:9px;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.25);font-size:13px;display:grid;place-items:center}
 .dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--off);margin-inline-end:6px;vertical-align:middle}
 .dot.ok{background:#3ee08f}.dot.demo{background:var(--vfd)}.dot.bad{background:var(--bad)}
 main{max-width:720px;margin:auto;padding:14px}
@@ -101,8 +105,9 @@ details.card summary{cursor:pointer;min-height:32px}
 <radialGradient id="gEye" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#1d3550"/><stop offset="1" stop-color="#0a1726"/></radialGradient>
 </defs></svg>
 <header>
-  <div class="logo">رؤية VISION<small>just push the button</small></div>
-  <div class="dev"><span class="dot" id="cdot"></span><span id="ctext">غير متصل</span><br><span id="devname" class="note" style="color:#bcd">—</span><select id="devsel" hidden aria-label="اختيار الجهاز"></select></div>
+  <div class="logo">رؤية · VISION<small>just push the button</small></div>
+  <div class="hctl"><button class="hb" id="b-lang" aria-label="Language">EN</button><button class="hb" id="b-theme" aria-label="Theme"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path id="themeic" d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button></div>
+  <div class="dev"><span class="dot" id="cdot"></span><span id="ctext" data-t="offline">غير متصل</span><br><span id="devname" class="note" style="color:#bcd">—</span><select id="devsel" hidden aria-label="اختيار الجهاز"></select></div>
 </header>
 
 <main>
@@ -110,66 +115,66 @@ details.card summary{cursor:pointer;min-height:32px}
   <div class="card gauge">
     <svg viewBox="0 0 240 200" id="gauge" aria-label="مؤشر الضغط"></svg>
     <div class="big" id="pval">--</div>
-    <div class="note">bar · الضغط المطلوب <b id="pset">--</b></div>
+    <div class="note">bar · <span data-t="setpoint">الضغط المطلوب</span> <b id="pset">--</b></div>
     <div class="chips" id="chips"></div>
   </div>
   <div class="card kpis">
-    <div><b id="hz">--</b><span>تردد الانفيرتر Hz</span></div>
-    <div><b id="nrun">--</b><span>مضخات تعمل</span></div>
-    <div><b id="state">--</b><span>حالة النظام</span></div>
+    <div><b id="hz">--</b><span data-t="k_hz">تردد الانفيرتر Hz</span></div>
+    <div><b id="nrun">--</b><span data-t="k_run">مضخات تعمل</span></div>
+    <div><b id="state">--</b><span data-t="k_state">حالة النظام</span></div>
   </div>
   <div class="card">
-    <h2>المضخات</h2>
+    <h2 data-t="h_pumps">المضخات</h2>
     <div class="pumps" id="pumps"></div>
-    <p class="note" style="margin:10px 0 0"><span style="color:var(--vfd)">●</span> على الانفيرتر &nbsp; <span style="color:var(--dol)">●</span> مباشر &nbsp; <span style="color:var(--bad)">●</span> عطل</p>
+    <p class="note" style="margin:10px 0 0"><span style="color:var(--vfd)">●</span> <span data-t="leg_vfd">على الانفيرتر</span> &nbsp; <span style="color:var(--dol)">●</span> <span data-t="leg_dol">مباشر</span> &nbsp; <span style="color:var(--bad)">●</span> <span data-t="leg_fault">عطل</span></p>
   </div>
   <div class="card">
-    <h2>التشغيل عن بعد</h2>
-    <div class="row"><button id="b-en1">تشغيل النظام</button><button class="sec" id="b-en0">إيقاف النظام</button></div>
-    <p class="note">الإيقاف عن بعد يوقف كل المضخات.</p>
+    <h2 data-t="h_remote">التشغيل عن بعد</h2>
+    <div class="row"><button id="b-en1" data-t="b_en1">تشغيل النظام</button><button class="sec" id="b-en0" data-t="b_en0">إيقاف النظام</button></div>
+    <p class="note" data-t="n_remote">الإيقاف عن بعد يوقف كل المضخات.</p>
   </div>
 </section>
 
 <section class="view" id="v-alarms">
   <div class="card">
-    <h2>الإنذارات</h2>
+    <h2 data-t="h_alarms">الإنذارات</h2>
     <div id="alarms"></div>
-    <div class="row"><button class="red" id="b-reset">Reset الإنذارات</button></div>
+    <div class="row"><button class="red" id="b-reset" data-t="b_reset">Reset الإنذارات</button></div>
   </div>
 </section>
 
 <section class="view" id="v-settings">
   <div class="card">
-    <h2>إعدادات الزبون</h2>
-    <label class="f"><span>الضغط المطلوب<small>bar</small></span><input type="number" step="0.1" id="s-pSet"></label>
+    <h2 data-t="h_cust">إعدادات الزبون</h2>
+    <label class="f"><span><span data-t="l_pset">الضغط المطلوب</span><small>bar</small></span><input type="number" step="0.1" id="s-pSet"></label>
     <div id="s-en"></div>
   </div>
   <div class="card">
-    <h2>إعدادات الفني</h2>
-    <p class="lock" id="lockmsg">مقفلة. أدخل رمز الفني في صفحة الاتصال لفتحها.</p>
+    <h2 data-t="h_tech">إعدادات الفني</h2>
+    <p class="lock" id="lockmsg" data-t="lockmsg">مقفلة. أدخل رمز الفني في صفحة الاتصال لفتحها.</p>
     <div id="adv"></div>
   </div>
-  <div class="row"><button id="b-save">حفظ وإرسال للجهاز</button><button class="sec" id="b-undo">تراجع</button></div>
+  <div class="row"><button id="b-save" data-t="b_save">حفظ وإرسال للجهاز</button><button class="sec" id="b-undo" data-t="b_undo">تراجع</button></div>
 </section>
 
 <section class="view" id="v-conn">
   <div class="card">
-    <h2>أجهزتي</h2>
+    <h2 data-t="h_mydev">أجهزتي</h2>
     <div id="devlist"></div>
-    <div class="row"><button id="b-scan">＋ إضافة جهاز (مسح الباركود)</button><button class="sec" id="b-demo">وضع العرض</button></div>
-    <p class="note">امسح ملصق الباركود الموجود على باب البورد. يمكنك أيضاً مسحه بكاميرا الهاتف العادية فيفتح التطبيق ويُضاف الجهاز تلقائياً.</p>
+    <div class="row"><button id="b-scan" data-t="b_scan">＋ إضافة جهاز (مسح الباركود)</button><button class="sec" id="b-demo" data-t="b_demo">وضع العرض</button></div>
+    <p class="note" data-t="n_scan">امسح ملصق الباركود الموجود على باب البورد. يمكنك أيضاً مسحه بكاميرا الهاتف العادية فيفتح التطبيق ويُضاف الجهاز تلقائياً.</p>
   </div>
-  <details class="card"><summary><b>إضافة يدوية (للفني)</b></summary>
-    <label class="f"><span>اسم الجهاز<small>يظهر للزبون</small></span><input id="c-name" placeholder="بوستر المجمع - البلوك A"></label>
-    <label class="f"><span>عنوان السيرفر<small>wss://…:8084/mqtt</small></span><input id="c-url" dir="ltr" placeholder="wss://xxxx.emqxsl.com:8084/mqtt"></label>
-    <label class="f"><span>اسم المستخدم</span><input id="c-user" dir="ltr" autocomplete="off"></label>
-    <label class="f"><span>كلمة المرور</span><input id="c-pass" type="password" dir="ltr" autocomplete="off"></label>
-    <label class="f"><span>رقم الجهاز<small>Device ID</small></span><input id="c-dev" dir="ltr" value="em300-01"></label>
-    <div class="row"><button id="b-add">حفظ الجهاز والاتصال</button></div>
+  <details class="card"><summary><b data-t="s_manual">إضافة يدوية (للفني)</b></summary>
+    <label class="f"><span><span data-t="l_name">اسم الجهاز</span><small data-t="l_name_s">يظهر للزبون</small></span><input id="c-name" placeholder="بوستر المجمع - البلوك A"></label>
+    <label class="f"><span><span data-t="l_url">عنوان السيرفر</span><small>wss://…:8084/mqtt</small></span><input id="c-url" dir="ltr" placeholder="wss://xxxx.emqxsl.com:8084/mqtt"></label>
+    <label class="f"><span data-t="l_user">اسم المستخدم</span><input id="c-user" dir="ltr" autocomplete="off"></label>
+    <label class="f"><span data-t="l_pass">كلمة المرور</span><input id="c-pass" type="password" dir="ltr" autocomplete="off"></label>
+    <label class="f"><span><span data-t="l_dev">رقم الجهاز</span><small>Device ID</small></span><input id="c-dev" dir="ltr" value="em300-01"></label>
+    <div class="row"><button id="b-add" data-t="b_add">حفظ الجهاز والاتصال</button></div>
   </details>
   <div class="card">
-    <label class="f"><span>رمز الفني<small>يفتح إعدادات الفني</small></span><input id="c-pin" type="password" inputmode="numeric" dir="ltr"></label>
-    <div class="row"><button class="sec" id="b-pin">فتح إعدادات الفني</button></div>
+    <label class="f"><span><span data-t="l_pin">رمز الفني</span><small data-t="l_pin_s">يفتح إعدادات الفني</small></span><input id="c-pin" type="password" inputmode="numeric" dir="ltr"></label>
+    <div class="row"><button class="sec" id="b-pin" data-t="b_pin">فتح إعدادات الفني</button></div>
     <p class="note" id="c-msg"></p>
   </div>
 </section>
@@ -178,21 +183,21 @@ details.card summary{cursor:pointer;min-height:32px}
 <div class="scan" id="askp" hidden>
   <div class="card" style="color:var(--ink);text-align:start;min-width:min(86vw,360px)">
     <h2 id="askt">رمز الجهاز</h2>
-    <p class="note">هذا الجهاز محمي. اكتب رمز الدخول الذي أعطاك إياه الفني.</p>
+    <p class="note" data-t="ask_n">هذا الجهاز محمي. اكتب رمز الدخول الذي أعطاك إياه الفني.</p>
     <input id="askv" type="password" dir="ltr" autocomplete="off" style="margin:8px 0">
-    <div class="row"><button id="asko">إضافة</button><button class="sec" id="askx">إلغاء</button></div>
+    <div class="row"><button id="asko" data-t="b_ok">إضافة</button><button class="sec" id="askx" data-t="b_cancel">إلغاء</button></div>
   </div>
 </div>
 <div class="scan" id="scan" hidden>
   <div class="scanbox"><video id="scanv" playsinline muted></video><i class="frame"></i></div>
   <p id="scanmsg">وجّه الكاميرا نحو باركود الجهاز</p>
-  <div class="row" style="justify-content:center"><button class="sec" id="b-scanx" style="background:#fff">إلغاء</button></div>
+  <div class="row" style="justify-content:center"><button class="sec" id="b-scanx" style="background:#fff" data-t="b_cancel">إلغاء</button></div>
 </div>
 <nav>
-  <button class="act" data-v="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M12 13l4-4"/></svg>الرئيسية</button>
-  <button data-v="alarms"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 17V11a6 6 0 0112 0v6l2 2H4z"/><path d="M10 21h4"/></svg><span>الإنذارات<span class="badge" id="abadge" hidden>0</span></span></button>
-  <button data-v="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>الإعدادات</button>
-  <button data-v="conn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12a10 10 0 0114 0M8 15a6 6 0 018 0"/><circle cx="12" cy="18" r="1.5"/></svg>الاتصال</button>
+  <button class="act" data-v="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M12 13l4-4"/></svg><span data-t="nav_home">الرئيسية</span></button>
+  <button data-v="alarms"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 17V11a6 6 0 0112 0v6l2 2H4z"/><path d="M10 21h4"/></svg><span><span data-t="nav_alarms">الإنذارات</span><span class="badge" id="abadge" hidden>0</span></span></button>
+  <button data-v="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg><span data-t="nav_set">الإعدادات</span></button>
+  <button data-v="conn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12a10 10 0 0114 0M8 15a6 6 0 018 0"/><circle cx="12" cy="18" r="1.5"/></svg><span data-t="nav_conn">الاتصال</span></button>
 </nav>
 <div class="toast" id="toast"></div>
 
@@ -201,15 +206,91 @@ details.card summary{cursor:pointer;min-height:32px}
 const ADMIN_PIN = '2580';          // change before giving the app to a customer
 const $ = id => document.getElementById(id);
 const store = { get(k){try{return localStorage.getItem('vb_'+k)}catch(e){return null}}, set(k,v){try{localStorage.setItem('vb_'+k,v)}catch(e){}} };
+const I18N={
+ar:{title:'رؤية - البوستر',gauge:'مؤشر الضغط',askt:'رمز الجهاز',scanmsg:'وجّه الكاميرا نحو باركود الجهاز',
+offline:'غير متصل',setpoint:'الضغط المطلوب',k_hz:'تردد الانفيرتر Hz',k_run:'مضخات تعمل',k_state:'حالة النظام',h_pumps:'المضخات',
+leg_vfd:'على الانفيرتر',leg_dol:'مباشر',leg_fault:'عطل',h_remote:'التشغيل عن بعد',b_en1:'تشغيل النظام',b_en0:'إيقاف النظام',
+n_remote:'الإيقاف عن بعد يوقف كل المضخات.',h_alarms:'الإنذارات',b_reset:'Reset الإنذارات',h_cust:'إعدادات الزبون',l_pset:'الضغط المطلوب',
+h_tech:'إعدادات الفني',lockmsg:'مقفلة. أدخل رمز الفني في صفحة الاتصال لفتحها.',b_save:'حفظ وإرسال للجهاز',b_undo:'تراجع',h_mydev:'أجهزتي',
+b_scan:'＋ إضافة جهاز (مسح الباركود)',b_demo:'وضع العرض',n_scan:'امسح ملصق الباركود الموجود على باب البورد. يمكنك أيضاً مسحه بكاميرا الهاتف العادية فيفتح التطبيق ويُضاف الجهاز تلقائياً.',
+s_manual:'إضافة يدوية (للفني)',l_name:'اسم الجهاز',l_name_s:'يظهر للزبون',l_url:'عنوان السيرفر',l_user:'اسم المستخدم',l_pass:'كلمة المرور',l_dev:'رقم الجهاز',
+b_add:'حفظ الجهاز والاتصال',l_pin:'رمز الفني',l_pin_s:'يفتح إعدادات الفني',b_pin:'فتح إعدادات الفني',ask_n:'هذا الجهاز محمي. اكتب رمز الدخول الذي أعطاك إياه الفني.',
+b_ok:'إضافة',b_cancel:'إلغاء',nav_home:'الرئيسية',nav_set:'الإعدادات',nav_conn:'الاتصال',nav_alarms:'الإنذارات',
+st_VFD:'انفيرتر',st_DOL:'مباشر',st_OFF:'متوقفة',st_FAULT:'عطل',st_START:'بدء',
+sq_IDLE:'جاهز / نائم',sq_VFD_CLOSE:'بدء التشغيل',sq_RUN:'يعمل',sq_TR_STOP:'نقل مضخة',sq_TR_OPEN:'نقل مضخة',stopped:'متوقف',
+pump:'مضخة',excluded:'مستبعدة',hrs:' س',c_remote:'مُمكّن عن بعد',c_water:'ماء منخفض',c_vfd:'عطل انفيرتر',c_sim:'محاكاة',
+cleared:' · زال السبب، اضغط Reset',noalarms:'لا توجد إنذارات',in_service:'في الخدمة',
+t_noconn:'غير متصل بالجهاز',t_en1:'أُرسل أمر التشغيل',t_en0:'أُرسل أمر الإيقاف',t_reset:'أُرسل Reset',t_undo:'أُلغيت التعديلات',
+t_psetbad:'الضغط المطلوب خارج الحدود المسموحة',t_sent:'أُرسلت الإعدادات للجهاز',t_added:'أُضيف الجهاز: ',t_del:'حُذف الجهاز',t_delc:'اضغط ✕ مرة ثانية لتأكيد الحذف',
+m_need:'اكتب عنوان السيرفر ورقم الجهاز.',t_pinok:'فُتحت إعدادات الفني',t_pinbad:'رمز غير صحيح',
+sc_cam:'لا يمكن فتح الكاميرا. اسمح للتطبيق باستخدام الكاميرا، أو امسح الباركود بكاميرا الهاتف.',sc_bad:'هذا الباركود ليس لجهاز VISION',
+cn_ing:'جارٍ الاتصال…',cn_fail:'فشل',m_lib:'تعذّر تحميل مكتبة الاتصال. تأكد من الإنترنت.',cn_err:'خطأ',m_url:'عنوان غير صالح.',cn_ok:'متصل',
+cn_re:'إعادة الاتصال…',cn_auth:'رفض الدخول',m_auth:'الرمز غير صحيح أو أُلغيت صلاحيتك. راجع الفني.',m_err:'خطأ: ',cn_demo:'وضع العرض',demo_name:'بيانات تجريبية',
+t_demo:'وضع العرض: بيانات تجريبية',d_open:'مفتوح',d_use:'فتح',d_del:'حذف',d_none:'لا توجد أجهزة بعد. اضغط "إضافة جهاز".',
+a_FAIL:'مضخة {n}: فشل تشغيل الكونتاكتور {k} - لم تعد إشارة Feedback',a_TRIP:'مضخة {n}: سقط الكونتاكتور {k} أثناء التشغيل (أوفرلود أو فصل)',a_STUCK:'مضخة {n}: الكونتاكتور {k} عالق - Feedback بدون أمر',
+a_SENSOR:'عطل حساس الضغط (الإشارة خارج 4-20mA)',a_VFD:'عطل الانفيرتر',a_WATER:'مستوى الماء منخفض - حماية التشغيل على الجاف',a_PHIGH:'ضغط عالٍ جداً ({p} bar) - توقف النظام',a_PLOW:'ضغط منخفض ({p} bar) رغم تشغيل المضخات',
+sec:'ثانية',
+f_nPumps:'عدد المضخات المركّبة',f_pRange:'مدى حساس الضغط',f_spdMin:'أقل سرعة للانفيرتر',f_kp:'معامل PI (Kp)',f_ti:'زمن التكامل (Ti)',f_tUp:'زمن إضافة مضخة',f_tDown:'زمن فصل مضخة',
+f_tSleep:'زمن النوم',f_stopBand:'فرق النوم',f_wakeBand:'فرق الاستيقاظ',f_tFb:'مهلة Feedback الكونتاكتور',f_tChange:'زمن النقل VFD→DOL',f_pHigh:'حد الضغط العالي',f_pLow:'حد الضغط المنخفض',f_tLow:'مهلة الضغط المنخفض',f_sim:'وضع المحاكاة',
+th_dark:'الوضع الليلي',th_light:'الوضع النهاري'},
+en:{title:'VISION - Booster',gauge:'Pressure gauge',askt:'Device code',scanmsg:'Point the camera at the device QR code',
+offline:'Offline',setpoint:'Setpoint',k_hz:'VFD frequency Hz',k_run:'Pumps running',k_state:'System state',h_pumps:'Pumps',
+leg_vfd:'On VFD',leg_dol:'Direct (DOL)',leg_fault:'Fault',h_remote:'Remote operation',b_en1:'Start system',b_en0:'Stop system',
+n_remote:'Remote stop stops all pumps.',h_alarms:'Alarms',b_reset:'Reset alarms',h_cust:'Customer settings',l_pset:'Pressure setpoint',
+h_tech:'Technician settings',lockmsg:'Locked. Enter the technician code on the Connection page to unlock.',b_save:'Save & send to device',b_undo:'Undo',h_mydev:'My devices',
+b_scan:'＋ Add device (scan QR)',b_demo:'Demo mode',n_scan:'Scan the QR sticker on the panel door. You can also scan it with the normal phone camera; the app opens and adds the device automatically.',
+s_manual:'Manual add (technician)',l_name:'Device name',l_name_s:'Shown to customer',l_url:'Server address',l_user:'Username',l_pass:'Password',l_dev:'Device ID',
+b_add:'Save device & connect',l_pin:'Technician code',l_pin_s:'Unlocks technician settings',b_pin:'Unlock technician settings',ask_n:'This device is protected. Enter the access code your technician gave you.',
+b_ok:'Add',b_cancel:'Cancel',nav_home:'Home',nav_set:'Settings',nav_conn:'Connection',nav_alarms:'Alarms',
+st_VFD:'VFD',st_DOL:'DOL',st_OFF:'Stopped',st_FAULT:'Fault',st_START:'Starting',
+sq_IDLE:'Ready / sleep',sq_VFD_CLOSE:'Starting',sq_RUN:'Running',sq_TR_STOP:'Transferring',sq_TR_OPEN:'Transferring',stopped:'Stopped',
+pump:'Pump',excluded:'Excluded',hrs:' h',c_remote:'Remote enabled',c_water:'Low water',c_vfd:'VFD fault',c_sim:'Simulation',
+cleared:' · cleared, press Reset',noalarms:'No alarms',in_service:'in service',
+t_noconn:'Not connected to device',t_en1:'Start command sent',t_en0:'Stop command sent',t_reset:'Reset sent',t_undo:'Changes discarded',
+t_psetbad:'Setpoint is outside the allowed range',t_sent:'Settings sent to device',t_added:'Device added: ',t_del:'Device removed',t_delc:'Press ✕ again to confirm removal',
+m_need:'Enter the server address and device ID.',t_pinok:'Technician settings unlocked',t_pinbad:'Wrong code',
+sc_cam:'Cannot open the camera. Allow camera access, or scan the QR with the phone camera.',sc_bad:'This QR code is not a VISION device',
+cn_ing:'Connecting…',cn_fail:'Failed',m_lib:'Could not load the connection library. Check the internet.',cn_err:'Error',m_url:'Invalid address.',cn_ok:'Connected',
+cn_re:'Reconnecting…',cn_auth:'Access denied',m_auth:'Wrong code or your access was revoked. Contact your technician.',m_err:'Error: ',cn_demo:'Demo mode',demo_name:'Demo data',
+t_demo:'Demo mode: sample data',d_open:'Open',d_use:'Open',d_del:'Remove',d_none:'No devices yet. Press "Add device".',
+a_FAIL:'Pump {n}: {k} contactor failed to close - no feedback',a_TRIP:'Pump {n}: {k} contactor dropped while running (overload or trip)',a_STUCK:'Pump {n}: {k} contactor stuck - feedback without command',
+a_SENSOR:'Pressure sensor fault (signal outside 4-20mA)',a_VFD:'VFD fault',a_WATER:'Low water level - dry-run protection',a_PHIGH:'Pressure too high ({p} bar) - system stopped',a_PLOW:'Low pressure ({p} bar) although pumps are running',
+sec:'s',
+f_nPumps:'Installed pumps',f_pRange:'Pressure sensor range',f_spdMin:'VFD minimum speed',f_kp:'PI gain (Kp)',f_ti:'Integral time (Ti)',f_tUp:'Pump add delay',f_tDown:'Pump remove delay',
+f_tSleep:'Sleep delay',f_stopBand:'Sleep band',f_wakeBand:'Wake band',f_tFb:'Contactor feedback timeout',f_tChange:'VFD→DOL transfer time',f_pHigh:'High pressure limit',f_pLow:'Low pressure limit',f_tLow:'Low pressure delay',f_sim:'Simulation mode',
+th_dark:'Night mode',th_light:'Day mode'}};
+let LANG=store.get('lang')||'ar';if(!I18N[LANG])LANG='ar';
+const t=k=>(I18N[LANG][k]??I18N.ar[k]??k);
+function alarmText(a){const c=String(a.code||'');let m=c.match(/^P(\d+)_(FAIL|TRIP|STUCK)_(VFD|DOL)$/);
+  if(m)return t('a_'+m[2]).replace('{n}',m[1]).replace('{k}',m[3]);
+  if(['SENSOR','VFD','WATER'].includes(c))return t('a_'+c);
+  if(c==='PHIGH'||c==='PLOW'){const p=(String(a.text).match(/([\d.]+)\s*bar/)||[])[1]||'?';return t('a_'+c).replace('{p}',p)}
+  return a.text}
+let connKey='offline',connCls='';
+function applyLang(){
+  const h=document.documentElement;h.lang=LANG;h.dir=LANG==='ar'?'rtl':'ltr';document.title=t('title');
+  document.querySelectorAll('[data-t]').forEach(e=>e.textContent=t(e.dataset.t));
+  $('gauge').setAttribute('aria-label',t('gauge'));$('askt').textContent=t('askt');$('scanmsg').textContent=t('scanmsg');
+  $('b-lang').textContent=LANG==='ar'?'EN':'ع';$('b-lang').title=LANG==='ar'?'English':'عربي';
+  setConn(connCls,connKey);if(mode==='demo')$('devname').textContent=t('demo_name');
+  pumpEls=[];if(S){render(S)}renderDevs();applyTheme();
+}
+let THEME=store.get('theme')||'';
+function applyTheme(){
+  const dark=THEME?THEME==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+  if(THEME)document.documentElement.dataset.theme=THEME;else delete document.documentElement.dataset.theme;
+  $('themeic').setAttribute('d',dark?'M12 4V2M12 22v-2M4 12H2M22 12h-2M5.6 5.6 4.2 4.2M19.8 19.8l-1.4-1.4M5.6 18.4l-1.4 1.4M19.8 4.2l-1.4 1.4M12 7a5 5 0 1 0 0 10a5 5 0 0 0 0-10z':'M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z');
+  $('b-theme').title=dark?t('th_light'):t('th_dark');
+  const m=document.querySelector('meta[name=theme-color]');if(m)m.content=dark?'#06182b':'#0b2a4a';
+}
+$('b-lang').onclick=()=>{LANG=LANG==='ar'?'en':'ar';store.set('lang',LANG);applyLang()};
+$('b-theme').onclick=()=>{const dark=THEME?THEME==='dark':matchMedia('(prefers-color-scheme: dark)').matches;THEME=dark?'light':'dark';store.set('theme',THEME);applyTheme()};
 let S = null, client = null, demoTimer = null, liveTimer = null, mode = 'off', admin = false, draft = null;
 
-const ADV = [
- ['nPumps','عدد المضخات المركّبة','1 - 6'],['pRange','مدى حساس الضغط','bar (20mA)'],['spdMin','أقل سرعة للانفيرتر','%'],['kp','معامل PI (Kp)','%/bar'],['ti','زمن التكامل (Ti)','ثانية'],
- ['tUp','زمن إضافة مضخة','ثانية'],['tDown','زمن فصل مضخة','ثانية'],['tSleep','زمن النوم','ثانية'],['stopBand','فرق النوم','bar'],['wakeBand','فرق الاستيقاظ','bar'],
- ['tFb','مهلة Feedback الكونتاكتور','ثانية'],['tChange','زمن النقل VFD→DOL','ثانية'],['pHigh','حد الضغط العالي','bar'],['pLow','حد الضغط المنخفض','bar'],['tLow','مهلة الضغط المنخفض','ثانية'],['sim','وضع المحاكاة','bool']];
+const ADV = [['nPumps','1 - 6'],['pRange','bar (20mA)'],['spdMin','%'],['kp','%/bar'],['ti','sec'],['tUp','sec'],['tDown','sec'],['tSleep','sec'],['stopBand','bar'],['wakeBand','bar'],['tFb','sec'],['tChange','sec'],['pHigh','bar'],['pLow','bar'],['tLow','sec'],['sim','bool']];
 
 function toast(t){const e=$('toast');e.textContent=t;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),2600)}
-function setConn(cls,txt){$('cdot').className='dot '+cls;$('ctext').textContent=txt}
+function setConn(cls,key){connCls=cls;connKey=key;$('cdot').className='dot '+cls;$('ctext').textContent=t(key)}
 
 /* ---------- gauge ---------- */
 function arc(r,a0,a1){const p=a=>[120+r*Math.cos(a),130+r*Math.sin(a)];const [x0,y0]=p(a0),[x1,y1]=p(a1);return `M${x0} ${y0}A${r} ${r} 0 ${a1-a0>Math.PI?1:0} 1 ${x1} ${y1}`}
@@ -241,15 +322,13 @@ const pumpSvg=()=>`<svg viewBox="0 0 80 150" aria-hidden="true">
 <line x1="30" y1="9" x2="30" y2="17" stroke="#5d6b78" stroke-width=".6"/><line x1="35" y1="7.5" x2="35" y2="17" stroke="#5d6b78" stroke-width=".6"/><line x1="40" y1="7" x2="40" y2="17" stroke="#5d6b78" stroke-width=".6"/><line x1="45" y1="7.5" x2="45" y2="17" stroke="#5d6b78" stroke-width=".6"/><line x1="50" y1="9" x2="50" y2="17" stroke="#5d6b78" stroke-width=".6"/>
 <circle cx="61" cy="33" r="2" class="led"/>
 </svg>`;
-const ST={VFD:'انفيرتر',DOL:'مباشر',OFF:'متوقفة',FAULT:'عطل',START:'بدء'};
-const SEQ={IDLE:'جاهز / نائم',VFD_CLOSE:'بدء التشغيل',RUN:'يعمل',TR_STOP:'نقل مضخة',TR_OPEN:'نقل مضخة'};
 
 /* ---------- pumps: built once, updated in place so the coupling animation never restarts ---------- */
 const reduceMotion=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
 let pumpEls=[];
 function buildPumps(n){
   const cols=n<=3?n:(n===4?2:3);$('pumps').style.setProperty('--cols',cols);
-  $('pumps').innerHTML=Array.from({length:n},(_,i)=>`<div class="pump OFF"><div class="top"><b>مضخة ${i+1}</b><span class="pill">متوقفة</span></div>${pumpSvg()}<div class="bot"><span dir="ltr" class="hz">—</span><span class="hr">0.0 س</span></div></div>`).join('');
+  $('pumps').innerHTML=Array.from({length:n},(_,i)=>`<div class="pump OFF"><div class="top"><b>${t('pump')} ${i+1}</b><span class="pill">${t('st_OFF')}</span></div>${pumpSvg()}<div class="bot"><span dir="ltr" class="hz">—</span><span class="hr">0.0${t('hrs')}</span></div></div>`).join('');
   pumpEls=[...$('pumps').children].map(el=>{
     const r=el.querySelector('.cpl');let anim=null;
     if(r&&r.animate){anim=r.animate([{transform:'translateX(0px)'},{transform:'translateX(-7.32px)'}],{duration:250,iterations:Infinity,easing:'linear'});anim.playbackRate=0}
@@ -266,9 +345,9 @@ function renderPumps(s){
   s.pumps.forEach((p,i)=>{const P=pumpEls[i];if(!P)return;
     const hz=p.state==='VFD'?(s.hz||0):(p.state==='DOL'?50:(p.state==='START'?10:0));
     const cls='pump '+p.state+(p.enabled?'':' dis');if(P.el.className!==cls)P.el.className=cls;
-    P.el.querySelector('.pill').textContent=p.enabled?(ST[p.state]||p.state):'مستبعدة';
+    P.el.querySelector('.pill').textContent=p.enabled?t('st_'+p.state):t('excluded');
     P.el.querySelector('.hz').textContent=hz&&p.state!=='START'?hz.toFixed(1)+' Hz':'—';
-    P.el.querySelector('.hr').textContent=p.hours.toFixed(1)+' س';
+    P.el.querySelector('.hr').textContent=p.hours.toFixed(1)+t('hrs');
     setRate(P,p.enabled?hz/50:0);
   });
 }
@@ -280,20 +359,20 @@ function render(s){
   $('pval').textContent=s.P.toFixed(2);$('pset').textContent=s.pSet.toFixed(1);
   $('hz').textContent=s.run?s.hz.toFixed(1):'0';
   $('nrun').textContent=s.pumps.filter(p=>p.state==='VFD'||p.state==='DOL').length;
-  $('state').textContent=!s.runOk?'متوقف':(SEQ[s.seq]||s.seq);
+  $('state').textContent=!s.runOk?t('stopped'):t('sq_'+s.seq);
   const chip=(on,t,bad)=>`<span class="chip ${on?(bad?'bad':'on'):''}">${t}</span>`;
-  $('chips').innerHTML=chip(s.remote,'مُمكّن عن بعد')+chip(!s.waterOk,'ماء منخفض',1)+chip(s.vfdFault,'عطل انفيرتر',1)+(s.sim?chip(1,'محاكاة'):'');
+  $('chips').innerHTML=chip(s.remote,t('c_remote'))+chip(!s.waterOk,t('c_water'),1)+chip(s.vfdFault,t('c_vfd'),1)+(s.sim?chip(1,t('c_sim')):'');
   renderPumps(s);
   const al=s.alarms||[];
   $('abadge').hidden=!al.length;$('abadge').textContent=al.length;
-  $('alarms').innerHTML=al.length?al.map(a=>`<div class="alarm ${a.active?'':'cleared'}"><i></i><div>${a.text}<small>${new Date(a.t).toLocaleString('ar-IQ')}${a.active?'':' · زال السبب، اضغط Reset'}</small></div></div>`).join(''):'<div class="empty">لا توجد إنذارات</div>';
+  $('alarms').innerHTML=al.length?al.map(a=>`<div class="alarm ${a.active?'':'cleared'}"><i></i><div>${esc(alarmText(a))}<small>${new Date(a.t).toLocaleString(LANG==='ar'?'ar-IQ':'en-GB')}${a.active?'':t('cleared')}</small></div></div>`).join(''):`<div class="empty">${t('noalarms')}</div>`;
   if(!draft) fillSettings(set);
 }
 function fillSettings(set){
   $('s-pSet').value=set.pSet??'';
   const en=set.enabled||[true,true,true,true,true,true], np=Math.min(Math.max(parseInt(set.nPumps)||6,1),6);
-  $('s-en').innerHTML=en.slice(0,np).map((e,i)=>`<label class="f"><span>مضخة ${i+1} في الخدمة</span><input type="checkbox" data-en="${i}" ${e?'checked':''}></label>`).join('');
-  $('adv').innerHTML=admin?ADV.map(([k,t,u])=>`<label class="f"><span>${t}<small>${u==='bool'?'':u}</small></span>${u==='bool'?`<input type="checkbox" data-k="${k}" ${set[k]?'checked':''}>`:(k==='nPumps'?`<select data-k="nPumps">${[1,2,3,4,5,6].map(n=>`<option ${n===np?'selected':''}>${n}</option>`).join('')}</select>`:`<input type="number" step="any" data-k="${k}" value="${set[k]??''}">`)}</label>`).join(''):'';
+  $('s-en').innerHTML=en.slice(0,np).map((e,i)=>`<label class="f"><span>${t('pump')} ${i+1} ${t('in_service')}</span><input type="checkbox" data-en="${i}" ${e?'checked':''}></label>`).join('');
+  $('adv').innerHTML=admin?ADV.map(([k,u])=>`<label class="f"><span>${t('f_'+k)}<small>${u==='bool'?'':u==='sec'?t('sec'):u}</small></span>${u==='bool'?`<input type="checkbox" data-k="${k}" ${set[k]?'checked':''}>`:(k==='nPumps'?`<select data-k="nPumps">${[1,2,3,4,5,6].map(n=>`<option ${n===np?'selected':''}>${n}</option>`).join('')}</select>`:`<input type="number" step="any" data-k="${k}" value="${set[k]??''}">`)}</label>`).join(''):'';
   $('lockmsg').hidden=admin;
 }
 document.addEventListener('input',e=>{if(e.target.closest('#v-settings'))draft=true});
@@ -301,22 +380,22 @@ document.addEventListener('input',e=>{if(e.target.closest('#v-settings'))draft=t
 /* ---------- commands ---------- */
 function send(cmd,payload){
   if(mode==='demo'){demoCmd(cmd,payload);return}
-  if(!client||!client.connected){toast('غير متصل بالجهاز');return}
+  if(!client||!client.connected){toast(t('t_noconn'));return}
   client.publish(base()+'/cmd',JSON.stringify({cmd,payload}),{qos:1});
 }
 const base=()=>'vision/'+((cur()&&cur().d)||'em300-01');
-$('b-en1').onclick=()=>{send('enable',true);toast('أُرسل أمر التشغيل')};
-$('b-en0').onclick=()=>{send('enable',false);toast('أُرسل أمر الإيقاف')};
-$('b-reset').onclick=()=>{send('reset',true);toast('أُرسل Reset')};
-$('b-undo').onclick=()=>{draft=null;if(S)fillSettings(S.settings||{});toast('أُلغيت التعديلات')};
+$('b-en1').onclick=()=>{send('enable',true);toast(t('t_en1'))};
+$('b-en0').onclick=()=>{send('enable',false);toast(t('t_en0'))};
+$('b-reset').onclick=()=>{send('reset',true);toast(t('t_reset'))};
+$('b-undo').onclick=()=>{draft=null;if(S)fillSettings(S.settings||{});toast(t('t_undo'))};
 $('b-save').onclick=()=>{
   const p={};const v=parseFloat($('s-pSet').value);if(!isNaN(v))p.pSet=v;
   const cur=((S&&S.settings&&S.settings.enabled)||[true,true,true,true,true,true]).slice();
   document.querySelectorAll('[data-en]').forEach(c=>cur[+c.dataset.en]=c.checked);p.enabled=cur;
   if(admin)document.querySelectorAll('[data-k]').forEach(i=>{p[i.dataset.k]=i.type==='checkbox'?i.checked:(i.dataset.k==='nPumps'?parseInt(i.value):parseFloat(i.value))});
   for(const k in p)if(typeof p[k]==='number'&&isNaN(p[k]))delete p[k];
-  if(p.pSet!==undefined&&(p.pSet<0.5||p.pSet>((S&&S.settings&&S.settings.pHigh)||8)-0.5)){toast('الضغط المطلوب خارج الحدود المسموحة');return}
-  send('settings',p);draft=null;toast('أُرسلت الإعدادات للجهاز');
+  if(p.pSet!==undefined&&(p.pSet<0.5||p.pSet>((S&&S.settings&&S.settings.pHigh)||8)-0.5)){toast(t('t_psetbad'));return}
+  send('settings',p);draft=null;toast(t('t_sent'));
 };
 
 /* ---------- MQTT ---------- */
@@ -332,15 +411,15 @@ function parseCode(txt){
   txt=String(txt||'').trim();let m=txt.match(/#add=([A-Za-z0-9_-]+)/)||txt.match(/^VISION:([A-Za-z0-9_-]+)$/);
   if(!m)return null;try{const o=b64d(m[1]);if(o&&o.u&&o.d)return o}catch(e){}return null}
 function addDevice(o,quiet){
-  if(!o.p&&!quiet){$('askt').textContent='رمز الجهاز: '+(o.n||o.d);$('askv').value='';$('askp').hidden=false;$('askv').focus();
+  if(!o.p&&!quiet){$('askt').textContent=t('askt')+': '+(o.n||o.d);$('askv').value='';$('askp').hidden=false;$('askv').focus();
     $('asko').onclick=()=>{const v=$('askv').value;if(!v){$('askv').focus();return}$('askp').hidden=true;addDevice(Object.assign({},o,{p:v}))};
     $('askx').onclick=()=>{$('askp').hidden=true};return}
   const dev={n:o.n||o.d,u:o.u,d:o.d,a:o.a||'',p:o.p||''};
   const i=devices.findIndex(x=>x.d===dev.d);if(i>=0)devices[i]=dev;else devices.push(dev);
-  activeId=dev.d;saveDevs();renderDevs();if(!quiet)toast('أُضيف الجهاز: '+dev.n);connect();
+  activeId=dev.d;saveDevs();renderDevs();if(!quiet)toast(t('t_added')+dev.n);connect();
 }
 function renderDevs(){
-  $('devlist').innerHTML=devices.length?devices.map(d=>`<div class="dev ${d.d===activeId?'on':''}"><div class="nm"><b>${esc(d.n)}</b><small dir="ltr">${esc(d.d)}</small></div><button class="sec" data-use="${esc(d.d)}">${d.d===activeId?'مفتوح':'فتح'}</button><button class="sec" data-del="${esc(d.d)}" aria-label="حذف">✕</button></div>`).join(''):'<div class="empty">لا توجد أجهزة بعد. اضغط "إضافة جهاز".</div>';
+  $('devlist').innerHTML=devices.length?devices.map(d=>`<div class="dev ${d.d===activeId?'on':''}"><div class="nm"><b>${esc(d.n)}</b><small dir="ltr">${esc(d.d)}</small></div><button class="sec" data-use="${esc(d.d)}">${d.d===activeId?t('d_open'):t('d_use')}</button><button class="sec" data-del="${esc(d.d)}" aria-label="${t('d_del')}">✕</button></div>`).join(''):`<div class="empty">${t('d_none')}</div>`;
   const sel=$('devsel');sel.hidden=devices.length<2;
   sel.innerHTML=devices.map(d=>`<option value="${esc(d.d)}" ${d.d===activeId?'selected':''}>${esc(d.n)}</option>`).join('');
   $('devname').hidden=devices.length>=2;
@@ -348,21 +427,21 @@ function renderDevs(){
 function esc(t){return String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 $('devlist').onclick=e=>{const u=e.target.dataset.use,d=e.target.dataset.del;
   if(u){activeId=u;saveDevs();renderDevs();connect()}
-  if(d){if(d===$('devlist').dataset.confirm){devices=devices.filter(x=>x.d!==d);if(activeId===d)activeId=(devices[0]||{}).d||'';saveDevs();renderDevs();$('devlist').dataset.confirm='';toast('حُذف الجهاز');if(devices.length)connect();else startDemo()}
-        else{$('devlist').dataset.confirm=d;toast('اضغط ✕ مرة ثانية لتأكيد الحذف')}}};
+  if(d){if(d===$('devlist').dataset.confirm){devices=devices.filter(x=>x.d!==d);if(activeId===d)activeId=(devices[0]||{}).d||'';saveDevs();renderDevs();$('devlist').dataset.confirm='';toast(t('t_del'));if(devices.length)connect();else startDemo()}
+        else{$('devlist').dataset.confirm=d;toast(t('t_delc'))}}};
 $('devsel').onchange=e=>{activeId=e.target.value;saveDevs();renderDevs();connect()};
 $('b-add').onclick=()=>{const o={n:$('c-name').value.trim(),u:$('c-url').value.trim(),d:$('c-dev').value.trim(),a:$('c-user').value.trim(),p:$('c-pass').value};
-  if(!o.u||!o.d){$('c-msg').textContent='اكتب عنوان السيرفر ورقم الجهاز.';return}addDevice(o)};
+  if(!o.u||!o.d){$('c-msg').textContent=t('m_need');return}addDevice(o)};
 let pinOk=false;
-$('b-pin').onclick=()=>{pinOk=admin=$('c-pin').value===ADMIN_PIN;toast(admin?'فُتحت إعدادات الفني':'رمز غير صحيح');draft=null;if(S)fillSettings(S.settings||{})};
+$('b-pin').onclick=()=>{pinOk=admin=$('c-pin').value===ADMIN_PIN;toast(admin?t('t_pinok'):t('t_pinbad'));draft=null;if(S)fillSettings(S.settings||{})};
 
 /* ---------- QR scanner ---------- */
 let scanStream=null,scanLoop=null;
 function loadScript(src){return new Promise((ok,no)=>{const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=no;document.head.appendChild(s)})}
 async function startScan(){
-  $('scan').hidden=false;$('scanmsg').textContent='وجّه الكاميرا نحو باركود الجهاز';
+  $('scan').hidden=false;$('scanmsg').textContent=t('scanmsg');
   try{scanStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false})}
-  catch(e){$('scanmsg').textContent='لا يمكن فتح الكاميرا. اسمح للتطبيق باستخدام الكاميرا، أو امسح الباركود بكاميرا الهاتف.';return}
+  catch(e){$('scanmsg').textContent=t('sc_cam');return}
   const v=$('scanv');v.srcObject=scanStream;await v.play().catch(()=>{});
   let det=null;if('BarcodeDetector' in window){try{det=new BarcodeDetector({formats:['qr_code']})}catch(e){}}
   if(!det&&!window.jsQR){try{await loadScript('https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js')}catch(e){}}
@@ -370,7 +449,7 @@ async function startScan(){
   const tick=async()=>{if(!scanStream)return;let txt=null;
     try{if(det){const r=await det.detect(v);if(r[0])txt=r[0].rawValue}
         else if(window.jsQR&&v.videoWidth){c.width=v.videoWidth;c.height=v.videoHeight;x.drawImage(v,0,0);const r=jsQR(x.getImageData(0,0,c.width,c.height).data,c.width,c.height);if(r)txt=r.data}}catch(e){}
-    if(txt){const o=parseCode(txt);if(o){stopScan();addDevice(o);return}$('scanmsg').textContent='هذا الباركود ليس لجهاز VISION'}
+    if(txt){const o=parseCode(txt);if(o){stopScan();addDevice(o);return}$('scanmsg').textContent=t('sc_bad')}
     scanLoop=setTimeout(tick,250)};
   tick();
 }
@@ -380,18 +459,18 @@ $('b-scan').onclick=startScan;$('b-scanx').onclick=stopScan;
 async function connect(){
   stopDemo();admin=pinOk;const dv=cur();
   if(!dv){startDemo();return}
-  setConn('','جارٍ الاتصال…');$('c-msg').textContent='';$('devname').textContent=dv.n;
-  try{await loadMqtt()}catch(e){setConn('bad','فشل');$('c-msg').textContent='تعذّر تحميل مكتبة الاتصال. تأكد من الإنترنت.';return}
+  setConn('','cn_ing');$('c-msg').textContent='';$('devname').textContent=dv.n;
+  try{await loadMqtt()}catch(e){setConn('bad','cn_fail');$('c-msg').textContent=t('m_lib');return}
   if(client)try{client.end(true)}catch(e){}
   S=null;draft=null;
   try{client=mqtt.connect(dv.u,{username:dv.a,password:dv.p,reconnectPeriod:4000,connectTimeout:10000,clientId:'app_'+Math.random().toString(16).slice(2,10)})}
-  catch(e){setConn('bad','خطأ');$('c-msg').textContent='عنوان غير صالح.';return}
+  catch(e){setConn('bad','cn_err');$('c-msg').textContent=t('m_url');return}
   mode='mqtt';
-  client.on('connect',()=>{setConn('ok','متصل');client.subscribe([base()+'/status',base()+'/alarm'],{qos:1});ping();clearInterval(liveTimer);liveTimer=setInterval(ping,60000)});
-  client.on('reconnect',()=>setConn('','إعادة الاتصال…'));
-  client.on('error',e=>{const m=String(e&&e.message||e);setConn('bad',/auth|password|5/i.test(m)?'رفض الدخول':'خطأ');$('c-msg').textContent=/auth|password/i.test(m)?'الرمز غير صحيح أو أُلغيت صلاحيتك. راجع الفني.':'خطأ: '+m});
+  client.on('connect',()=>{setConn('ok','cn_ok');client.subscribe([base()+'/status',base()+'/alarm'],{qos:1});ping();clearInterval(liveTimer);liveTimer=setInterval(ping,60000)});
+  client.on('reconnect',()=>setConn('','cn_re'));
+  client.on('error',e=>{const m=String(e&&e.message||e);setConn('bad',/auth|password|5/i.test(m)?'cn_auth':'cn_err');$('c-msg').textContent=/auth|password/i.test(m)?t('m_auth'):t('m_err')+m});
   client.on('message',(t,m)=>{if(!t.startsWith(base()+'/'))return;let d;try{d=JSON.parse(m.toString())}catch(e){return}
-    if(t.endsWith('/status'))render(d);else if(t.endsWith('/alarm')&&Array.isArray(d))d.forEach(a=>toast('⚠ '+a.text))});
+    if(t.endsWith('/status'))render(d);else if(t.endsWith('/alarm')&&Array.isArray(d))d.forEach(a=>toast('⚠ '+alarmText(a)))});
 }
 function ping(){if(client&&client.connected&&!document.hidden)client.publish(base()+'/cmd',JSON.stringify({cmd:'live'}))}
 document.addEventListener('visibilitychange',ping);
@@ -400,11 +479,11 @@ document.addEventListener('visibilitychange',ping);
 let D;
 function startDemo(){
   if(client)try{client.end(true)}catch(e){} client=null;
-  mode='demo';admin=true;setConn('demo','وضع العرض');$('devname').textContent='بيانات تجريبية';
+  mode='demo';admin=true;setConn('demo','cn_demo');$('devname').textContent=t('demo_name');
   D={P:3.2,spd:80,run:true,vfd:1,dol:[0],demand:2,hours:[12.4,11.9,8.2,7.5,3.1,2.8],
      set:{pSet:4,pRange:10,pHigh:8,pLow:1.5,spdMin:60,kp:8,ti:3,tUp:10,tDown:10,tSleep:30,stopBand:0.3,wakeBand:0.3,tFb:3,tChange:0.5,tLow:60,sim:true,nPumps:6,enabled:[true,true,true,true,true,true]},
-     alarms:[{code:'P6',text:'مضخة 6: سقط الكونتاكتور DOL أثناء التشغيل (أوفرلود أو فصل)',t:Date.now()-3600e3,active:false}],fault:5,remote:true,t:0};
-  clearInterval(demoTimer);demoTimer=setInterval(demoStep,1000);demoStep();toast('وضع العرض: بيانات تجريبية');
+     alarms:[{code:'P6_TRIP_DOL',text:'مضخة 6: سقط الكونتاكتور DOL أثناء التشغيل (أوفرلود أو فصل)',t:Date.now()-3600e3,active:false}],fault:5,remote:true,t:0};
+  clearInterval(demoTimer);demoTimer=setInterval(demoStep,1000);demoStep();toast(t('t_demo'));
 }
 function stopDemo(){clearInterval(demoTimer);demoTimer=null}
 function demoStep(){
@@ -435,6 +514,7 @@ document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('act',v.id==='v-'+b.dataset.v));window.scrollTo(0,0)});
 
 (function init(){
+  applyLang();
   const o=parseCode(location.hash);
   if(o){history.replaceState(null,'',location.pathname);addDevice(o);document.querySelector('nav button[data-v=home]').click();return}
   renderDevs();if(devices.length)connect();else startDemo();
