@@ -51,11 +51,10 @@ h2{font-size:17px;margin:0 0 10px}
 .pump .bot span{white-space:nowrap}
 .mot{fill:var(--pc)}.cas{fill:url(#gMetal);stroke:color-mix(in srgb,var(--ink) 35%,transparent);stroke-width:.6}
 .base{fill:color-mix(in srgb,var(--ink) 55%,transparent)}.edge{fill:none;stroke:color-mix(in srgb,var(--ink) 40%,transparent);stroke-width:.6}
-.cpl{animation:none}.pump.VFD .cpl,.pump.DOL .cpl,.pump.START .cpl{animation:slide var(--dur,.6s) linear infinite}
-@keyframes slide{to{transform:translateX(-7.3px)}}
+.cpl{will-change:transform}
 .led{fill:var(--pc)}.pump.VFD .led,.pump.DOL .led{filter:drop-shadow(0 0 2px var(--pc))}
 @keyframes spin{to{transform:rotate(360deg)}}
-@media (prefers-reduced-motion:reduce){.pump .cpl{animation:none!important}}
+
 @media (max-width:380px){.pump .top b{font-size:13px}.pill{font-size:11px;padding:1px 6px}}
 .alarm{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}
 .alarm:last-child{border:0}.alarm i{flex:none;width:10px;height:10px;border-radius:50%;background:var(--bad);margin-top:8px}
@@ -97,6 +96,7 @@ details.card summary{cursor:pointer;min-height:32px}
 <linearGradient id="gShine" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".25"/></linearGradient>
 <linearGradient id="gCyl" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7d8a97"/><stop offset=".28" stop-color="#eef2f6"/><stop offset=".5" stop-color="#c3ccd5"/><stop offset="1" stop-color="#6b7884"/></linearGradient>
 <linearGradient id="gShineH" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000" stop-opacity=".28"/><stop offset=".3" stop-color="#fff" stop-opacity=".38"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".3"/></linearGradient>
+<clipPath id="cWin"><rect x="34" y="60" width="12" height="6"/></clipPath>
 <pattern id="pStripe" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(35)"><rect width="3" height="6" fill="#2a3a4a"/><rect x="3" width="3" height="6" fill="#9fb0c0"/></pattern>
 <radialGradient id="gEye" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#1d3550"/><stop offset="1" stop-color="#0a1726"/></radialGradient>
 </defs></svg>
@@ -233,7 +233,7 @@ const pumpSvg=()=>`<svg viewBox="0 0 80 150" aria-hidden="true">
 <line x1="24" y1="74" x2="24" y2="126" stroke="#8796a4" stroke-width="1.6"/><line x1="56" y1="74" x2="56" y2="126" stroke="#8796a4" stroke-width="1.6"/>
 <rect x="22" y="70" width="36" height="7" rx="1.5" fill="url(#gCyl)" stroke="#5d6b78" stroke-width=".6"/>
 <path d="M25 56 h30 l-3 14 h-24 z" fill="url(#gCyl)" stroke="#5d6b78" stroke-width=".6"/>
-<rect x="33" y="59" width="14" height="8" rx="1.5" fill="#1a2733"/><rect class="cpl" x="34" y="60" width="12" height="6" fill="url(#pStripe)"/>
+<rect x="33" y="59" width="14" height="8" rx="1.5" fill="#1a2733"/><g clip-path="url(#cWin)"><rect class="cpl" x="26" y="60" width="32" height="6" fill="url(#pStripe)"/></g>
 <rect x="19" y="50" width="42" height="7" rx="2" class="mot"/><rect x="19" y="50" width="42" height="7" rx="2" fill="url(#gShineH)"/>
 <rect x="21" y="18" width="38" height="34" rx="4" class="mot"/><line x1="25" y1="22" x2="25" y2="50" stroke="#000" stroke-opacity=".16" stroke-width="1.2"/><line x1="29" y1="22" x2="29" y2="50" stroke="#000" stroke-opacity=".16" stroke-width="1.2"/><line x1="33" y1="22" x2="33" y2="50" stroke="#000" stroke-opacity=".16" stroke-width="1.2"/><line x1="37" y1="22" x2="37" y2="50" stroke="#000" stroke-opacity=".16" stroke-width="1.2"/><line x1="41" y1="22" x2="41" y2="50" stroke="#000" stroke-opacity=".16" stroke-width="1.2"/><line x1="45" y1="22" x2="45" y2="50" stroke="#000" stroke-opacity=".16" stroke-width="1.2"/><line x1="49" y1="22" x2="49" y2="50" stroke="#000" stroke-opacity=".16" stroke-width="1.2"/><line x1="53" y1="22" x2="53" y2="50" stroke="#000" stroke-opacity=".16" stroke-width="1.2"/><line x1="57" y1="22" x2="57" y2="50" stroke="#000" stroke-opacity=".16" stroke-width="1.2"/><rect x="21" y="18" width="38" height="34" rx="4" fill="url(#gShineH)"/>
 <rect x="56" y="26" width="10" height="14" rx="2" class="mot"/><rect x="56" y="26" width="10" height="14" rx="2" fill="url(#gShineH)"/>
@@ -244,6 +244,34 @@ const pumpSvg=()=>`<svg viewBox="0 0 80 150" aria-hidden="true">
 const ST={VFD:'انفيرتر',DOL:'مباشر',OFF:'متوقفة',FAULT:'عطل',START:'بدء'};
 const SEQ={IDLE:'جاهز / نائم',VFD_CLOSE:'بدء التشغيل',RUN:'يعمل',TR_STOP:'نقل مضخة',TR_OPEN:'نقل مضخة'};
 
+/* ---------- pumps: built once, updated in place so the coupling animation never restarts ---------- */
+const reduceMotion=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+let pumpEls=[];
+function buildPumps(n){
+  const cols=n<=3?n:(n===4?2:3);$('pumps').style.setProperty('--cols',cols);
+  $('pumps').innerHTML=Array.from({length:n},(_,i)=>`<div class="pump OFF"><div class="top"><b>مضخة ${i+1}</b><span class="pill">متوقفة</span></div>${pumpSvg()}<div class="bot"><span dir="ltr" class="hz">—</span><span class="hr">0.0 س</span></div></div>`).join('');
+  pumpEls=[...$('pumps').children].map(el=>{
+    const r=el.querySelector('.cpl');let anim=null;
+    if(r&&r.animate){anim=r.animate([{transform:'translateX(0px)'},{transform:'translateX(-7.32px)'}],{duration:250,iterations:Infinity,easing:'linear'});anim.playbackRate=0}
+    return {el,anim,rate:0,target:0};
+  });
+}
+function setRate(p,target){p.target=reduceMotion?0:target}
+(function smooth(){ // ease playback rate toward target -> smooth speed-up / slow-down
+  for(const p of pumpEls){if(!p.anim)continue;const d=p.target-p.rate;if(Math.abs(d)>0.002){p.rate+=d*0.08;try{p.anim.playbackRate=p.rate}catch(e){}}else if(p.rate!==p.target){p.rate=p.target;try{p.anim.playbackRate=p.rate}catch(e){}}}
+  requestAnimationFrame(smooth);
+})();
+function renderPumps(s){
+  if(pumpEls.length!==s.pumps.length)buildPumps(s.pumps.length);
+  s.pumps.forEach((p,i)=>{const P=pumpEls[i];if(!P)return;
+    const hz=p.state==='VFD'?(s.hz||0):(p.state==='DOL'?50:(p.state==='START'?10:0));
+    const cls='pump '+p.state+(p.enabled?'':' dis');if(P.el.className!==cls)P.el.className=cls;
+    P.el.querySelector('.pill').textContent=p.enabled?(ST[p.state]||p.state):'مستبعدة';
+    P.el.querySelector('.hz').textContent=hz&&p.state!=='START'?hz.toFixed(1)+' Hz':'—';
+    P.el.querySelector('.hr').textContent=p.hours.toFixed(1)+' س';
+    setRate(P,p.enabled?hz/50:0);
+  });
+}
 /* ---------- render ---------- */
 function render(s){
   S=s; const set=s.settings||{};
@@ -255,12 +283,7 @@ function render(s){
   $('state').textContent=!s.runOk?'متوقف':(SEQ[s.seq]||s.seq);
   const chip=(on,t,bad)=>`<span class="chip ${on?(bad?'bad':'on'):''}">${t}</span>`;
   $('chips').innerHTML=chip(s.remote,'مُمكّن عن بعد')+chip(!s.waterOk,'ماء منخفض',1)+chip(s.vfdFault,'عطل انفيرتر',1)+(s.sim?chip(1,'محاكاة'):'');
-  const np=s.pumps.length, cols=np<=3?np:(np===4?2:3);
-  $('pumps').style.setProperty('--cols',cols);
-  $('pumps').innerHTML=s.pumps.map(p=>{
-    const hz=p.state==='VFD'?(s.hz||0):(p.state==='DOL'?50:0);
-    const dur=hz>0?(0.9*50/Math.max(hz,5)).toFixed(2)+'s':'.6s';
-    return `<div class="pump ${p.state} ${p.enabled?'':'dis'}" style="--dur:${dur}"><div class="top"><b>مضخة ${p.n}</b><span class="pill">${p.enabled?ST[p.state]||p.state:'مستبعدة'}</span></div>${pumpSvg()}<div class="bot"><span dir="ltr">${hz?hz.toFixed(1)+' Hz':'—'}</span><span>${p.hours.toFixed(1)} س</span></div></div>`}).join('');
+  renderPumps(s);
   const al=s.alarms||[];
   $('abadge').hidden=!al.length;$('abadge').textContent=al.length;
   $('alarms').innerHTML=al.length?al.map(a=>`<div class="alarm ${a.active?'':'cleared'}"><i></i><div>${a.text}<small>${new Date(a.t).toLocaleString('ar-IQ')}${a.active?'':' · زال السبب، اضغط Reset'}</small></div></div>`).join(''):'<div class="empty">لا توجد إنذارات</div>';
