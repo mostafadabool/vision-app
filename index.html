@@ -276,7 +276,7 @@ a_FAIL:'مضخة {n}: فشل تشغيل الكونتاكتور {k} - لم تعد
 a_SENSOR:'عطل حساس الضغط (الإشارة خارج 4-20mA)',a_VFD:'عطل الانفيرتر',a_WATER:'مستوى الماء منخفض - حماية التشغيل على الجاف',a_PHIGH:'ضغط عالٍ جداً ({p} bar) - توقف النظام',a_PLOW:'ضغط منخفض ({p} bar) رغم تشغيل المضخات',
 sec:'ثانية',
 f_nPumps:'عدد المضخات المركّبة',f_pRange:'مدى حساس الضغط',f_spdMin:'أقل سرعة للانفيرتر',f_kp:'معامل PI (Kp)',f_ti:'زمن التكامل (Ti)',f_tUp:'زمن إضافة مضخة',f_tDown:'زمن فصل مضخة',
-f_tSleep:'زمن النوم',f_stopBand:'فرق النوم',f_wakeBand:'فرق الاستيقاظ',f_tFb:'مهلة Feedback الكونتاكتور',f_tChange:'زمن النقل VFD→DOL',f_pHigh:'حد الضغط العالي',f_pLow:'حد الضغط المنخفض',f_tLow:'مهلة الضغط المنخفض',f_sim:'وضع المحاكاة',
+f_tSleep:'زمن النوم',f_stopBand:'فرق النوم',f_wakeBand:'فرق الاستيقاظ',f_tFb:'مهلة Feedback الكونتاكتور',f_tChange:'زمن النقل VFD→DOL',f_pHigh:'حد الضغط العالي',f_pLow:'حد الضغط المنخفض',f_tLow:'مهلة الضغط المنخفض',f_sim:'وضع المحاكاة',f_noWater:'إلغاء حساس المستوى (بدون حماية الجاف)',c_nowater:'حساس المستوى ملغى',
 th_dark:'الوضع الليلي',th_light:'الوضع النهاري',
 a_active:'الحالية',a_hist:'السجل',b_refresh:'تحديث',nav_trend:'التريند',tr_p:'الضغط bar',tr_ps:'المطلوب',tr_s:'سرعة الانفيرتر %',tr_r:'مضخات تعمل',
 tr_note:'متوسط كل دقيقة، آخر 48 ساعة، محفوظ داخل الجهاز.',tr_none:'لا توجد بيانات بعد. تُسجَّل نقطة كل دقيقة.',loading:'جارٍ التحميل…',h_none:'السجل فارغ',
@@ -311,7 +311,7 @@ a_FAIL:'Pump {n}: {k} contactor failed to close - no feedback',a_TRIP:'Pump {n}:
 a_SENSOR:'Pressure sensor fault (signal outside 4-20mA)',a_VFD:'VFD fault',a_WATER:'Low water level - dry-run protection',a_PHIGH:'Pressure too high ({p} bar) - system stopped',a_PLOW:'Low pressure ({p} bar) although pumps are running',
 sec:'s',
 f_nPumps:'Installed pumps',f_pRange:'Pressure sensor range',f_spdMin:'VFD minimum speed',f_kp:'PI gain (Kp)',f_ti:'Integral time (Ti)',f_tUp:'Pump add delay',f_tDown:'Pump remove delay',
-f_tSleep:'Sleep delay',f_stopBand:'Sleep band',f_wakeBand:'Wake band',f_tFb:'Contactor feedback timeout',f_tChange:'VFD→DOL transfer time',f_pHigh:'High pressure limit',f_pLow:'Low pressure limit',f_tLow:'Low pressure delay',f_sim:'Simulation mode',
+f_tSleep:'Sleep delay',f_stopBand:'Sleep band',f_wakeBand:'Wake band',f_tFb:'Contactor feedback timeout',f_tChange:'VFD→DOL transfer time',f_pHigh:'High pressure limit',f_pLow:'Low pressure limit',f_tLow:'Low pressure delay',f_sim:'Simulation mode',f_noWater:'Bypass level sensor (no dry-run protection)',c_nowater:'Level sensor bypassed',
 th_dark:'Night mode',th_light:'Day mode',
 a_active:'Active',a_hist:'History',b_refresh:'Refresh',nav_trend:'Trends',tr_p:'Pressure bar',tr_ps:'Setpoint',tr_s:'VFD speed %',tr_r:'Pumps running',
 tr_note:'1-minute averages, last 48 hours, stored in the device.',tr_none:'No data yet. One point is logged every minute.',loading:'Loading…',h_none:'History is empty',
@@ -350,7 +350,7 @@ $('b-lang').onclick=()=>{LANG=LANG==='ar'?'en':'ar';store.set('lang',LANG);apply
 $('b-theme').onclick=()=>{const dark=THEME?THEME==='dark':matchMedia('(prefers-color-scheme: dark)').matches;THEME=dark?'light':'dark';store.set('theme',THEME);applyTheme()};
 let S = null, client = null, demoTimer = null, liveTimer = null, mode = 'off', admin = false, draft = null;
 
-const ADV = [['nPumps','1 - 6'],['pRange','bar (20mA)'],['spdMin','%'],['kp','%/bar'],['ti','sec'],['tUp','sec'],['tDown','sec'],['tSleep','sec'],['stopBand','bar'],['wakeBand','bar'],['tFb','sec'],['tChange','sec'],['pHigh','bar'],['pLow','bar'],['tLow','sec'],['sim','bool']];
+const ADV = [['nPumps','1 - 6'],['pRange','bar (20mA)'],['spdMin','%'],['kp','%/bar'],['ti','sec'],['tUp','sec'],['tDown','sec'],['tSleep','sec'],['stopBand','bar'],['wakeBand','bar'],['tFb','sec'],['tChange','sec'],['pHigh','bar'],['pLow','bar'],['tLow','sec'],['noWater','bool'],['sim','bool']];
 
 function toast(t){const e=$('toast');e.textContent=t;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),2600)}
 function setConn(cls,key){connCls=cls;connKey=key;$('cdot').className='dot '+cls;$('ctext').textContent=t(key)}
@@ -426,7 +426,7 @@ function render(s){
   $('nrun').textContent=s.pumps.filter(p=>p.state==='VFD'||p.state==='DOL').length;
   $('state').textContent=!s.runOk?t('stopped'):t('sq_'+s.seq);
   const chip=(on,t,bad)=>`<span class="chip ${on?(bad?'bad':'on'):''}">${t}</span>`;
-  $('chips').innerHTML=chip(s.remote,t('c_remote'))+chip(!s.waterOk,t('c_water'),1)+chip(s.vfdFault,t('c_vfd'),1)+(s.sim?chip(1,t('c_sim')):'');
+  $('chips').innerHTML=chip(s.remote,t('c_remote'))+chip(!s.waterOk,t('c_water'),1)+chip(s.vfdFault,t('c_vfd'),1)+(s.sim?chip(1,t('c_sim')):'')+(set.noWater?chip(1,t('c_nowater'),1):'');
   renderPumps(s);if(!$('psheet').hidden)renderSheet();
   const al=s.alarms||[];
   $('abadge').hidden=!al.length;$('abadge').textContent=al.length;
