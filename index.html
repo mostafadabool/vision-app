@@ -92,6 +92,29 @@ details.card summary{cursor:pointer;min-height:32px}
 .frame{position:absolute;inset:14%;border:3px solid var(--vfd);border-radius:14px;box-shadow:0 0 0 999px rgba(0,0,0,.35)}
 #devsel{font:inherit;font-size:13px;min-height:30px;background:transparent;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:8px;padding:0 6px;max-width:160px}
 #devsel option{color:#000}
+nav{grid-template-columns:repeat(5,minmax(0,1fr))}nav button{font-size:12px}
+.seg{display:flex;gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:3px;margin-bottom:10px}
+.seg button{flex:1;min-height:38px;background:transparent;color:var(--mut);border-radius:9px;padding:0 8px;font-size:14px}
+.seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.hrow{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+.hrow:last-child{border:0}.hrow i{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:12px;color:#fff;margin-top:1px}
+.hrow i.ON{background:var(--bad)}.hrow i.OFF{background:var(--dol)}.hrow i.CMD{background:var(--water)}
+.hrow small{display:block;color:var(--mut);font-size:12px}
+.pump{cursor:pointer}.pump:active{transform:scale(.98)}
+.pump .mtag{position:absolute;top:-7px;inset-inline-start:8px;font-size:10px;font-weight:700;background:var(--vfd);color:#000;border-radius:6px;padding:0 5px}
+.sheet[hidden]{display:none!important}
+.sheet{position:fixed;inset:0;z-index:15;background:rgba(3,10,20,.55);display:flex;align-items:flex-end;justify-content:center}
+.sheet .card{width:min(100%,560px);margin:0;border-radius:20px 20px 0 0;max-height:88vh;overflow:auto;padding-bottom:24px}
+.sh-h{display:flex;align-items:center;gap:10px;margin-bottom:8px}.sh-h h2{margin:0;flex:1}
+.sh-h button{min-height:36px;padding:0 12px}
+.info{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin:8px 0 12px}
+.info div{background:var(--bg);border-radius:10px;padding:8px 10px}.info small{display:block;color:var(--mut);font-size:12px}.info b{font-size:16px}
+.io{display:flex;align-items:center;gap:6px}.io span{width:10px;height:10px;border-radius:50%;background:var(--off)}.io span.on{background:var(--dol)}
+.ctl button{flex:1}.ctl button.on{outline:3px solid var(--vfd);outline-offset:1px}
+.chartw{position:relative}#chart{width:100%;height:auto;display:block;touch-action:pan-y}
+#chart text{font-size:11px;fill:var(--mut)}#chart{direction:ltr}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:13px;color:var(--mut);margin-top:6px}.legend i{display:inline-block;width:14px;height:3px;border-radius:2px;vertical-align:middle;margin-inline-end:5px}
+.readout{font-size:13px;min-height:20px;color:var(--ink);text-align:center;margin-top:4px}
 </style>
 </head>
 <body>
@@ -137,9 +160,22 @@ details.card summary{cursor:pointer;min-height:32px}
 
 <section class="view" id="v-alarms">
   <div class="card">
-    <h2 data-t="h_alarms">الإنذارات</h2>
-    <div id="alarms"></div>
-    <div class="row"><button class="red" id="b-reset" data-t="b_reset">Reset الإنذارات</button></div>
+    <div class="seg" id="aseg"><button class="on" data-a="act" data-t="a_active">الحالية</button><button data-a="hist" data-t="a_hist">السجل</button></div>
+    <div id="apane-act"><div id="alarms"></div>
+    <div class="row"><button class="red" id="b-reset" data-t="b_reset">Reset الإنذارات</button></div></div>
+    <div id="apane-hist" hidden><div id="hist"><div class="empty">…</div></div>
+    <div class="row"><button class="sec" id="b-hist" data-t="b_refresh">تحديث</button></div></div>
+  </div>
+</section>
+
+<section class="view" id="v-trend">
+  <div class="card">
+    <div class="seg" id="tseg"><button data-h="1">1h</button><button class="on" data-h="6">6h</button><button data-h="24">24h</button><button data-h="48">48h</button></div>
+    <div class="chartw"><svg id="chart" viewBox="0 0 400 250" role="img"></svg></div>
+    <div class="readout" id="readout"></div>
+    <div class="legend"><span><i style="background:var(--water)"></i><span data-t="tr_p">الضغط bar</span></span><span><i style="background:var(--water);opacity:.45"></i><span data-t="tr_ps">المطلوب</span></span><span><i style="background:var(--vfd)"></i><span data-t="tr_s">سرعة الانفيرتر %</span></span><span><i style="background:var(--dol);height:8px;opacity:.5"></i><span data-t="tr_r">مضخات تعمل</span></span></div>
+    <div class="row"><button class="sec" id="b-trend" data-t="b_refresh">تحديث</button></div>
+    <p class="note" data-t="tr_note">متوسط كل دقيقة، آخر 48 ساعة، محفوظ داخل الجهاز.</p>
   </div>
 </section>
 
@@ -180,6 +216,14 @@ details.card summary{cursor:pointer;min-height:32px}
 </section>
 </main>
 
+<div class="sheet" id="psheet" hidden><div class="card" role="dialog" aria-modal="true">
+  <div class="sh-h"><h2 id="ps-t">—</h2><span class="pill" id="ps-st">—</span><button class="sec" id="ps-x">✕</button></div>
+  <div class="info" id="ps-info"></div>
+  <h2 style="font-size:15px" data-t="ps_mode">طريقة التشغيل</h2>
+  <div class="row ctl" id="ps-mode"><button class="sec" data-m="AUTO" data-t="m_auto">آلي</button><button class="sec" data-m="MAN" data-t="m_man">يدوي</button></div>
+  <div class="row ctl" id="ps-run" hidden><button data-r="1" style="background:var(--dol)" data-t="m_start">تشغيل</button><button class="red" data-r="0" data-t="m_stop">إطفاء</button></div>
+  <p class="note" id="ps-note"></p>
+</div></div>
 <div class="scan" id="askp" hidden>
   <div class="card" style="color:var(--ink);text-align:start;min-width:min(86vw,360px)">
     <h2 id="askt">رمز الجهاز</h2>
@@ -196,6 +240,7 @@ details.card summary{cursor:pointer;min-height:32px}
 <nav>
   <button class="act" data-v="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M12 13l4-4"/></svg><span data-t="nav_home">الرئيسية</span></button>
   <button data-v="alarms"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 17V11a6 6 0 0112 0v6l2 2H4z"/><path d="M10 21h4"/></svg><span><span data-t="nav_alarms">الإنذارات</span><span class="badge" id="abadge" hidden>0</span></span></button>
+  <button data-v="trend"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 20h18"/><path d="M4 16l5-6 4 4 7-8"/></svg><span data-t="nav_trend">التريند</span></button>
   <button data-v="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg><span data-t="nav_set">الإعدادات</span></button>
   <button data-v="conn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12a10 10 0 0114 0M8 15a6 6 0 018 0"/><circle cx="12" cy="18" r="1.5"/></svg><span data-t="nav_conn">الاتصال</span></button>
 </nav>
@@ -232,7 +277,16 @@ a_SENSOR:'عطل حساس الضغط (الإشارة خارج 4-20mA)',a_VFD:'ع
 sec:'ثانية',
 f_nPumps:'عدد المضخات المركّبة',f_pRange:'مدى حساس الضغط',f_spdMin:'أقل سرعة للانفيرتر',f_kp:'معامل PI (Kp)',f_ti:'زمن التكامل (Ti)',f_tUp:'زمن إضافة مضخة',f_tDown:'زمن فصل مضخة',
 f_tSleep:'زمن النوم',f_stopBand:'فرق النوم',f_wakeBand:'فرق الاستيقاظ',f_tFb:'مهلة Feedback الكونتاكتور',f_tChange:'زمن النقل VFD→DOL',f_pHigh:'حد الضغط العالي',f_pLow:'حد الضغط المنخفض',f_tLow:'مهلة الضغط المنخفض',f_sim:'وضع المحاكاة',
-th_dark:'الوضع الليلي',th_light:'الوضع النهاري'},
+th_dark:'الوضع الليلي',th_light:'الوضع النهاري',
+a_active:'الحالية',a_hist:'السجل',b_refresh:'تحديث',nav_trend:'التريند',tr_p:'الضغط bar',tr_ps:'المطلوب',tr_s:'سرعة الانفيرتر %',tr_r:'مضخات تعمل',
+tr_note:'متوسط كل دقيقة، آخر 48 ساعة، محفوظ داخل الجهاز.',tr_none:'لا توجد بيانات بعد. تُسجَّل نقطة كل دقيقة.',loading:'جارٍ التحميل…',h_none:'السجل فارغ',
+ev_ON:'ظهر',ev_OFF:'زال',ev_CMD:'أمر',e_MAN:'مضخة {n}: تحويل إلى يدوي',e_AUTO:'مضخة {n}: تحويل إلى آلي',e_MSTART:'مضخة {n}: تشغيل يدوي',e_MSTOP:'مضخة {n}: إطفاء يدوي',
+e_ENABLE:'تشغيل النظام عن بعد',e_DISABLE:'إيقاف النظام عن بعد',e_RESET:'Reset الإنذارات',e_SET:'تعديل الإعدادات',e_BOOT:'إعادة تشغيل الجهاز',
+ps_mode:'طريقة التشغيل',m_auto:'آلي',m_man:'يدوي',m_start:'تشغيل',m_stop:'إطفاء',i_state:'الحالة',i_hz:'التردد',i_hours:'ساعات التشغيل',i_starts:'عدد مرات التشغيل',
+i_last:'آخر تشغيل',i_mode:'الطريقة',i_fbv:'كونتاكتور VFD',i_fbd:'كونتاكتور DOL',i_fault:'العطل',i_none:'لا يوجد',i_cmdfb:'أمر / رجوع',
+n_man:'اليدوي يشغّل المضخة مباشرة (DOL) ويخرجها من التسلسل الآلي. تبقى الحمايات فعّالة: الماء، الضغط العالي، العطل، الإيقاف عن بعد.',
+n_manblk:'⚠ التشغيل اليدوي ممنوع الآن (النظام موقوف عن بعد أو ماء منخفض أو ضغط عالٍ).',n_lockp:'التحكم اليدوي يحتاج رمز الفني.',n_dis:'المضخة خارج الخدمة. فعّلها من الإعدادات أولاً.',
+t_cmd:'أُرسل الأمر',t_man:'المضخة على يدوي'},
 en:{title:'VISION - Booster',gauge:'Pressure gauge',askt:'Device code',scanmsg:'Point the camera at the device QR code',
 offline:'Offline',setpoint:'Setpoint',k_hz:'VFD frequency Hz',k_run:'Pumps running',k_state:'System state',h_pumps:'Pumps',
 leg_vfd:'On VFD',leg_dol:'Direct (DOL)',leg_fault:'Fault',h_remote:'Remote operation',b_en1:'Start system',b_en0:'Stop system',
@@ -258,7 +312,16 @@ a_SENSOR:'Pressure sensor fault (signal outside 4-20mA)',a_VFD:'VFD fault',a_WAT
 sec:'s',
 f_nPumps:'Installed pumps',f_pRange:'Pressure sensor range',f_spdMin:'VFD minimum speed',f_kp:'PI gain (Kp)',f_ti:'Integral time (Ti)',f_tUp:'Pump add delay',f_tDown:'Pump remove delay',
 f_tSleep:'Sleep delay',f_stopBand:'Sleep band',f_wakeBand:'Wake band',f_tFb:'Contactor feedback timeout',f_tChange:'VFD→DOL transfer time',f_pHigh:'High pressure limit',f_pLow:'Low pressure limit',f_tLow:'Low pressure delay',f_sim:'Simulation mode',
-th_dark:'Night mode',th_light:'Day mode'}};
+th_dark:'Night mode',th_light:'Day mode',
+a_active:'Active',a_hist:'History',b_refresh:'Refresh',nav_trend:'Trends',tr_p:'Pressure bar',tr_ps:'Setpoint',tr_s:'VFD speed %',tr_r:'Pumps running',
+tr_note:'1-minute averages, last 48 hours, stored in the device.',tr_none:'No data yet. One point is logged every minute.',loading:'Loading…',h_none:'History is empty',
+ev_ON:'Raised',ev_OFF:'Cleared',ev_CMD:'Command',e_MAN:'Pump {n}: switched to manual',e_AUTO:'Pump {n}: switched to auto',e_MSTART:'Pump {n}: manual start',e_MSTOP:'Pump {n}: manual stop',
+e_ENABLE:'System started remotely',e_DISABLE:'System stopped remotely',e_RESET:'Alarms reset',e_SET:'Settings changed',e_BOOT:'Device restarted',
+ps_mode:'Operating mode',m_auto:'Auto',m_man:'Manual',m_start:'Start',m_stop:'Stop',i_state:'State',i_hz:'Frequency',i_hours:'Run hours',i_starts:'Starts',
+i_last:'Last start',i_mode:'Mode',i_fbv:'VFD contactor',i_fbd:'DOL contactor',i_fault:'Fault',i_none:'None',i_cmdfb:'cmd / feedback',
+n_man:'Manual runs the pump direct-on-line (DOL) and removes it from the automatic sequence. Protections stay active: water, high pressure, fault, remote stop.',
+n_manblk:'⚠ Manual run is blocked now (system stopped remotely, low water or high pressure).',n_lockp:'Manual control needs the technician code.',n_dis:'Pump is out of service. Enable it in Settings first.',
+t_cmd:'Command sent',t_man:'Pump is on manual'}};
 let LANG=store.get('lang')||'ar';if(!I18N[LANG])LANG='ar';
 const t=k=>(I18N[LANG][k]??I18N.ar[k]??k);
 function alarmText(a){const c=String(a.code||'');let m=c.match(/^P(\d+)_(FAIL|TRIP|STUCK)_(VFD|DOL)$/);
@@ -273,7 +336,7 @@ function applyLang(){
   $('gauge').setAttribute('aria-label',t('gauge'));$('askt').textContent=t('askt');$('scanmsg').textContent=t('scanmsg');
   $('b-lang').textContent=LANG==='ar'?'EN':'ع';$('b-lang').title=LANG==='ar'?'English':'عربي';
   setConn(connCls,connKey);if(mode==='demo')$('devname').textContent=t('demo_name');
-  pumpEls=[];if(S){render(S)}renderDevs();applyTheme();
+  pumpEls=[];if(S){render(S)}renderDevs();applyTheme();if(HIST)renderHist();drawChart();
 }
 let THEME=store.get('theme')||'';
 function applyTheme(){
@@ -328,10 +391,11 @@ const reduceMotion=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduc
 let pumpEls=[];
 function buildPumps(n){
   const cols=n<=3?n:(n===4?2:3);$('pumps').style.setProperty('--cols',cols);
-  $('pumps').innerHTML=Array.from({length:n},(_,i)=>`<div class="pump OFF"><div class="top"><b>${t('pump')} ${i+1}</b><span class="pill">${t('st_OFF')}</span></div>${pumpSvg()}<div class="bot"><span dir="ltr" class="hz">—</span><span class="hr">0.0${t('hrs')}</span></div></div>`).join('');
+  $('pumps').innerHTML=Array.from({length:n},(_,i)=>`<div class="pump OFF" data-i="${i}" role="button" tabindex="0"><span class="mtag" hidden></span><div class="top"><b>${t('pump')} ${i+1}</b><span class="pill">${t('st_OFF')}</span></div>${pumpSvg()}<div class="bot"><span dir="ltr" class="hz">—</span><span class="hr">0.0${t('hrs')}</span></div></div>`).join('');
   pumpEls=[...$('pumps').children].map(el=>{
     const r=el.querySelector('.cpl');let anim=null;
     if(r&&r.animate){anim=r.animate([{transform:'translateX(0px)'},{transform:'translateX(-7.32px)'}],{duration:250,iterations:Infinity,easing:'linear'});anim.playbackRate=0}
+    el.onclick=()=>openPump(+el.dataset.i);el.onkeydown=e=>{if(e.key==='Enter')openPump(+el.dataset.i)};
     return {el,anim,rate:0,target:0};
   });
 }
@@ -348,6 +412,7 @@ function renderPumps(s){
     P.el.querySelector('.pill').textContent=p.enabled?t('st_'+p.state):t('excluded');
     P.el.querySelector('.hz').textContent=hz&&p.state!=='START'?hz.toFixed(1)+' Hz':'—';
     P.el.querySelector('.hr').textContent=p.hours.toFixed(1)+t('hrs');
+    const mt=P.el.querySelector('.mtag');mt.hidden=p.mode!=='MAN';mt.textContent=t('m_man');
     setRate(P,p.enabled?hz/50:0);
   });
 }
@@ -362,7 +427,7 @@ function render(s){
   $('state').textContent=!s.runOk?t('stopped'):t('sq_'+s.seq);
   const chip=(on,t,bad)=>`<span class="chip ${on?(bad?'bad':'on'):''}">${t}</span>`;
   $('chips').innerHTML=chip(s.remote,t('c_remote'))+chip(!s.waterOk,t('c_water'),1)+chip(s.vfdFault,t('c_vfd'),1)+(s.sim?chip(1,t('c_sim')):'');
-  renderPumps(s);
+  renderPumps(s);if(!$('psheet').hidden)renderSheet();
   const al=s.alarms||[];
   $('abadge').hidden=!al.length;$('abadge').textContent=al.length;
   $('alarms').innerHTML=al.length?al.map(a=>`<div class="alarm ${a.active?'':'cleared'}"><i></i><div>${esc(alarmText(a))}<small>${new Date(a.t).toLocaleString(LANG==='ar'?'ar-IQ':'en-GB')}${a.active?'':t('cleared')}</small></div></div>`).join(''):`<div class="empty">${t('noalarms')}</div>`;
@@ -462,15 +527,15 @@ async function connect(){
   setConn('','cn_ing');$('c-msg').textContent='';$('devname').textContent=dv.n;
   try{await loadMqtt()}catch(e){setConn('bad','cn_fail');$('c-msg').textContent=t('m_lib');return}
   if(client)try{client.end(true)}catch(e){}
-  S=null;draft=null;
+  S=null;draft=null;HIST=null;TR=null;
   try{client=mqtt.connect(dv.u,{username:dv.a,password:dv.p,reconnectPeriod:4000,connectTimeout:10000,clientId:'app_'+Math.random().toString(16).slice(2,10)})}
   catch(e){setConn('bad','cn_err');$('c-msg').textContent=t('m_url');return}
   mode='mqtt';
-  client.on('connect',()=>{setConn('ok','cn_ok');client.subscribe([base()+'/status',base()+'/alarm'],{qos:1});ping();clearInterval(liveTimer);liveTimer=setInterval(ping,60000)});
+  client.on('connect',()=>{setConn('ok','cn_ok');client.subscribe([base()+'/status',base()+'/alarm',base()+'/history',base()+'/trend'],{qos:1});ping();clearInterval(liveTimer);liveTimer=setInterval(ping,60000)});
   client.on('reconnect',()=>setConn('','cn_re'));
   client.on('error',e=>{const m=String(e&&e.message||e);setConn('bad',/auth|password|5/i.test(m)?'cn_auth':'cn_err');$('c-msg').textContent=/auth|password/i.test(m)?t('m_auth'):t('m_err')+m});
   client.on('message',(t,m)=>{if(!t.startsWith(base()+'/'))return;let d;try{d=JSON.parse(m.toString())}catch(e){return}
-    if(t.endsWith('/status'))render(d);else if(t.endsWith('/alarm')&&Array.isArray(d))d.forEach(a=>toast('⚠ '+alarmText(a)))});
+    if(t.endsWith('/status'))render(d);else if(t.endsWith('/history'))gotHist(d);else if(t.endsWith('/trend'))gotTrend(d);else if(t.endsWith('/alarm')&&Array.isArray(d))d.forEach(a=>toast('⚠ '+alarmText(a)))});
 }
 function ping(){if(client&&client.connected&&!document.hidden)client.publish(base()+'/cmd',JSON.stringify({cmd:'live'}))}
 document.addEventListener('visibilitychange',ping);
@@ -482,7 +547,18 @@ function startDemo(){
   mode='demo';admin=true;setConn('demo','cn_demo');$('devname').textContent=t('demo_name');
   D={P:3.2,spd:80,run:true,vfd:1,dol:[0],demand:2,hours:[12.4,11.9,8.2,7.5,3.1,2.8],
      set:{pSet:4,pRange:10,pHigh:8,pLow:1.5,spdMin:60,kp:8,ti:3,tUp:10,tDown:10,tSleep:30,stopBand:0.3,wakeBand:0.3,tFb:3,tChange:0.5,tLow:60,sim:true,nPumps:6,enabled:[true,true,true,true,true,true]},
-     alarms:[{code:'P6_TRIP_DOL',text:'مضخة 6: سقط الكونتاكتور DOL أثناء التشغيل (أوفرلود أو فصل)',t:Date.now()-3600e3,active:false}],fault:5,remote:true,t:0};
+     alarms:[{code:'P6_TRIP_DOL',text:'مضخة 6: سقط الكونتاكتور DOL أثناء التشغيل (أوفرلود أو فصل)',t:Date.now()-3600e3,active:false}],fault:5,remote:true,t:0,
+     mode:['AUTO','AUTO','AUTO','AUTO','AUTO','AUTO'],man:[0,0,0,0,0,0],starts:[412,398,305,290,121,117],lastOn:[0,0,0,0,0,0].map((_,i)=>Date.now()-(i+1)*5400e3)};
+  const now=Date.now(),H=[];
+  [[50,'BOOT','CMD'],[47,'WATER','ON'],[46.8,'WATER','OFF'],[30,'SET','CMD','pSet'],[22,'PLOW','ON','(2.9 bar)'],[21.9,'PLOW','OFF','(3.6 bar)'],[9,'P3_MAN','CMD'],[8.9,'P3_MSTART','CMD'],[8.5,'P3_MSTOP','CMD'],[8.4,'P3_AUTO','CMD'],[1,'P6_TRIP_DOL','ON'],[0.5,'RESET','CMD']]
+    .forEach(([h,code,ev,text])=>H.push({t:now-h*3600e3,code,ev,text:text||''}));
+  D.hist=H;
+  const N=2880,t0=Math.floor(now/60000)*60000-(N-1)*60000,TP=[],TS=[],TRr=[];
+  for(let i=0;i<N;i++){const hr=new Date(t0+i*60000).getHours()+new Date(t0+i*60000).getMinutes()/60;
+    const dem=0.6+2.4*Math.max(0,Math.sin((hr-5)/24*2*Math.PI))+0.8*Math.exp(-((hr-19)**2)/4)+0.05*Math.sin(i/7);
+    const r=Math.max(1,Math.ceil(dem-0.15)),sp=Math.round(Math.min(100,Math.max(60,60+40*(dem-(r-1)))+(Math.random()-.5)*3));
+    TP.push(+(4+(Math.random()-.5)*0.25-(i%517<4?1.1:0)).toFixed(2));TS.push(dem<0.75?0:sp);TRr.push(dem<0.75?0:r)}
+  D.trend={t0,step:60,P:TP,S:TS,R:TRr};
   clearInterval(demoTimer);demoTimer=setInterval(demoStep,1000);demoStep();toast(t('t_demo'));
 }
 function stopDemo(){clearInterval(demoTimer);demoTimer=null}
@@ -497,21 +573,110 @@ function demoStep(){
   const cap=D.dol.length+(D.run?(D.spd/100)**2:0);D.P+=((Math.min(Math.max(5+2.5*(cap-D.demand),0),9.5))-D.P)/3;
   [...D.dol,D.vfd].forEach(i=>{if(i>=0)D.hours[i]+=1/3600});
   render({P:D.P,pSet:s.pSet,spd:D.spd,hz:D.spd/2,run:D.run,seq:D.run?'RUN':'IDLE',runOk:D.remote,remote:D.remote,waterOk:true,vfdFault:false,sim:true,settings:s,
-    pumps:D.hours.slice(0,s.nPumps||6).map((h,i)=>({n:i+1,enabled:s.enabled[i],state:i===D.fault?'FAULT':i===D.vfd?'VFD':D.dol.includes(i)?'DOL':'OFF',fault:i===D.fault?'TRIP-DOL':null,hours:h})),alarms:D.alarms});
-  function pick(){let b=-1;for(let i=0;i<(s.nPumps||6);i++)if(s.enabled[i]&&i!==D.fault&&i!==D.vfd&&!D.dol.includes(i)&&(b<0||D.hours[i]<D.hours[b]))b=i;return b}
+    manOk:D.remote,pumps:D.hours.slice(0,s.nPumps||6).map((h,i)=>{const man=D.mode[i]==='MAN'&&D.man[i]&&D.remote&&i!==D.fault&&s.enabled[i];
+      const st=i===D.fault?'FAULT':i===D.vfd?'VFD':(D.dol.includes(i)||man)?'DOL':'OFF';
+      return {n:i+1,enabled:s.enabled[i],state:st,fault:i===D.fault?'TRIP-DOL':null,hours:h,starts:D.starts[i],lastOn:D.lastOn[i],mode:D.mode[i],man:!!D.man[i],
+        cmd:[+(st==='VFD'),+(st==='DOL')],fb:[+(st==='VFD'),+(st==='DOL')]}}),alarms:D.alarms});
+  function pick(){let b=-1;for(let i=0;i<(s.nPumps||6);i++)if(s.enabled[i]&&D.mode[i]!=='MAN'&&i!==D.fault&&i!==D.vfd&&!D.dol.includes(i)&&(b<0||D.hours[i]<D.hours[b]))b=i;return b}
 }
 function demoCmd(cmd,p){
   if(cmd==='enable')D.remote=!!p;
+  if(cmd==='get'){if(p==='history')setTimeout(()=>gotHist(D.hist.slice()),200);if(p==='trend')setTimeout(()=>gotTrend(D.trend),200);return}
+  if(cmd==='pump'){const i=p.i,log=c=>D.hist.push({t:Date.now(),code:'P'+(i+1)+'_'+c,ev:'CMD',text:''});
+    if(p.mode&&p.mode!==D.mode[i]){D.mode[i]=p.mode;log(p.mode);if(p.mode==='MAN'){if(D.vfd===i){D.vfd=-1;D.run=false}D.dol=D.dol.filter(x=>x!==i)}else{if(D.man[i])D.dol.push(i);D.man[i]=0}}
+    if(typeof p.run==='boolean'&&D.mode[i]==='MAN'&&!!D.man[i]!==p.run){D.man[i]=p.run?1:0;log(p.run?'MSTART':'MSTOP');if(p.run){D.starts[i]++;D.lastOn[i]=Date.now()}}}
   if(cmd==='reset'){D.alarms=D.alarms.filter(a=>a.active);D.fault=-1}
   if(cmd==='settings'){Object.assign(D.set,p);const n=D.set.nPumps||6;D.dol=D.dol.filter(i=>D.set.enabled[i]&&i<n);if(D.vfd>=0&&(!D.set.enabled[D.vfd]||D.vfd>=n))D.vfd=-1;draft=null}
   demoStep();
 }
 $('b-demo').onclick=()=>startDemo();
 
+
+/* ---------- pump detail sheet ---------- */
+let sheetI=-1;
+function openPump(i){sheetI=i;$('psheet').hidden=false;renderSheet()}
+$('ps-x').onclick=()=>{$('psheet').hidden=true;sheetI=-1};
+$('psheet').onclick=e=>{if(e.target.id==='psheet'){$('psheet').hidden=true;sheetI=-1}};
+function fmtT(ms){if(!ms)return '—';return new Date(ms).toLocaleString(LANG==='ar'?'ar-IQ':'en-GB',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}
+function renderSheet(){
+  if(!S||!S.pumps||!S.pumps[sheetI]){$('psheet').hidden=true;return}
+  const p=S.pumps[sheetI],hz=p.state==='VFD'?(S.hz||0):(p.state==='DOL'?50:0),man=p.mode==='MAN';
+  $('ps-t').textContent=t('pump')+' '+p.n;
+  const pl=$('ps-st');pl.textContent=p.enabled?t('st_'+p.state):t('excluded');
+  pl.style.background={VFD:'var(--vfd)',DOL:'var(--dol)',FAULT:'var(--bad)',START:'var(--water)'}[p.state]||'var(--off)';
+  const io=(c,f)=>`<span class="io"><span class="${c?'on':''}"></span><span class="${f?'on':''}"></span><small>${c?'ON':'OFF'} / ${f?'ON':'OFF'}</small></span>`;
+  const cell=(k,v)=>`<div><small>${t(k)}</small><b>${v}</b></div>`;
+  const c=p.cmd||[0,0],f=p.fb||[0,0];
+  $('ps-info').innerHTML=cell('i_state',p.enabled?t('st_'+p.state):t('excluded'))+cell('i_hz',hz?hz.toFixed(1)+' Hz':'—')+
+    cell('i_hours',(p.hours||0).toFixed(1)+t('hrs'))+cell('i_starts',p.starts??'—')+cell('i_last',fmtT(p.lastOn))+cell('i_mode',man?t('m_man'):t('m_auto'))+
+    `<div><small>${t('i_fbv')} · ${t('i_cmdfb')}</small>${io(c[0],f[0])}</div><div><small>${t('i_fbd')} · ${t('i_cmdfb')}</small>${io(c[1],f[1])}</div>`+
+    (p.fault?`<div style="grid-column:1/-1;color:var(--bad)"><small>${t('i_fault')}</small><b>${esc(p.fault)}</b></div>`:'');
+  $('ps-mode').querySelectorAll('button').forEach(b=>{b.classList.toggle('on',b.dataset.m===(p.mode||'AUTO'));b.disabled=!admin});
+  $('ps-run').hidden=!(man&&admin);
+  $('ps-run').querySelectorAll('button').forEach(b=>b.classList.toggle('on',(b.dataset.r==='1')===!!p.man));
+  $('ps-note').textContent=!admin?t('n_lockp'):!p.enabled?t('n_dis'):(man&&S.manOk===false)?t('n_manblk'):t('n_man');
+}
+$('ps-mode').onclick=e=>{const m=e.target.closest('button')&&e.target.closest('button').dataset.m;if(!m||!admin||sheetI<0)return;send('pump',{i:sheetI,mode:m});toast(t('t_cmd'))};
+$('ps-run').onclick=e=>{const b=e.target.closest('button');if(!b||!admin||sheetI<0)return;send('pump',{i:sheetI,run:b.dataset.r==='1'});toast(t('t_cmd'))};
+
+/* ---------- alarm history ---------- */
+let HIST=null;
+function evText(e){const c=String(e.code||'');let m=c.match(/^P(\d+)_(MAN|AUTO|MSTART|MSTOP)$/);
+  if(m)return t('e_'+m[2]).replace('{n}',m[1]);
+  if(e.ev==='CMD'&&I18N.ar['e_'+c])return t('e_'+c)+(c==='SET'&&e.text?' ('+e.text+')':'');
+  return alarmText(e)}
+function renderHist(){
+  if(!HIST){$('hist').innerHTML=`<div class="empty">${t('loading')}</div>`;return}
+  $('hist').innerHTML=HIST.length?HIST.slice().reverse().map(e=>`<div class="hrow"><i class="${e.ev}">${e.ev==='ON'?'!':e.ev==='OFF'?'✓':'›'}</i><div>${esc(evText(e))}<small>${t('ev_'+e.ev)} · ${new Date(e.t).toLocaleString(LANG==='ar'?'ar-IQ':'en-GB')}</small></div></div>`).join(''):`<div class="empty">${t('h_none')}</div>`}
+function gotHist(d){if(Array.isArray(d)){HIST=d;renderHist()}}
+function askHist(){HIST=HIST||null;renderHist();send('get','history')}
+$('aseg').onclick=e=>{const b=e.target.closest('button');if(!b)return;$('aseg').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+  $('apane-act').hidden=b.dataset.a!=='act';$('apane-hist').hidden=b.dataset.a!=='hist';if(b.dataset.a==='hist')askHist()};
+$('b-hist').onclick=askHist;
+
+/* ---------- trends ---------- */
+let TR=null,trH=6,trTimer=null;
+function gotTrend(d){if(d&&Array.isArray(d.P)){TR=d;drawChart()}}
+function askTrend(){send('get','trend')}
+$('tseg').onclick=e=>{const b=e.target.closest('button');if(!b)return;$('tseg').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));trH=+b.dataset.h;drawChart()};
+$('b-trend').onclick=askTrend;
+function drawChart(){
+  const svg=$('chart'),W=400,H=250,L=26,Rr=26,T=14,B=30,pw=W-L-Rr,ph=H-T-B;
+  $('readout').textContent='';
+  if(!TR||!TR.P.length){svg.innerHTML=`<text x="200" y="125" text-anchor="middle">${TR?t('tr_none'):t('loading')}</text>`;$('readout').textContent='';return}
+  const step=(TR.step||60)*1000,n=TR.P.length,tEnd=TR.t0+(n-1)*step,tStart=tEnd-trH*3600e3;
+  const i0=Math.max(0,Math.ceil((tStart-TR.t0)/step));
+  const set=(S&&S.settings)||{},pMax=set.pRange||10,pSet=S?S.pSet:null,nMax=Math.max(1,(S&&S.nPumps)||6);
+  const X=tm=>L+(tm-tStart)/(tEnd-tStart||1)*pw,YP=v=>T+ph-(v/pMax)*ph,YS=v=>T+ph-(v/100)*ph;
+  let g='';
+  for(let k=0;k<=5;k++){const v=pMax*k/5,y=YP(v);g+=`<line x1="${L}" x2="${W-Rr}" y1="${y}" y2="${y}" stroke="var(--line)"/><text x="${L-5}" y="${y+4}" text-anchor="end">${+v.toFixed(1)}</text><text x="${W-Rr+5}" y="${y+4}">${k*20}</text>`}
+  const ticks=trH>24?4:trH<=1?4:6;
+  for(let k=0;k<=ticks;k++){const tm=tStart+(tEnd-tStart)*k/ticks,x=X(tm),d=new Date(tm);
+    const lab=trH>24?d.toLocaleDateString(LANG==='ar'?'ar-IQ':'en-GB',{weekday:'short'})+' '+String(d.getHours()).padStart(2,'0')+':00':String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+    g+=`<line x1="${x}" x2="${x}" y1="${T+ph}" y2="${T+ph+4}" stroke="var(--mut)"/><text x="${x}" y="${H-B+16}" text-anchor="middle" font-size="10">${lab}</text>`}
+  // running pumps (bars at bottom, up to 35% height)
+  let bars='';const bw=Math.max(pw/((tEnd-tStart)/step),0.6);
+  for(let i=i0;i<n;i++){const r=TR.R[i];if(!r)continue;const h=r/nMax*ph*0.35;bars+=`<rect x="${X(TR.t0+i*step)-bw/2}" y="${T+ph-h}" width="${bw}" height="${h}"/>`}
+  const path=(arr,Y)=>{let d='',pen=false;for(let i=i0;i<n;i++){const v=arr[i];if(v===null||v===undefined){pen=false;continue}d+=(pen?'L':'M')+X(TR.t0+i*step).toFixed(1)+' '+Y(v).toFixed(1);pen=true}return d};
+  svg.innerHTML=g+`<g fill="var(--dol)" opacity=".35">${bars}</g>`+
+    (pSet!=null?`<line x1="${L}" x2="${W-Rr}" y1="${YP(pSet)}" y2="${YP(pSet)}" stroke="var(--water)" stroke-opacity=".5" stroke-dasharray="6 4" stroke-width="1.5"/>`:'')+
+    `<path d="${path(TR.S,YS)}" fill="none" stroke="var(--vfd)" stroke-width="1.6" stroke-linejoin="round"/>`+
+    `<path d="${path(TR.P,YP)}" fill="none" stroke="var(--water)" stroke-width="2.2" stroke-linejoin="round"/>`+
+    `<text x="${L-5}" y="${T-2}" text-anchor="end">bar</text><text x="${W-Rr+5}" y="${T-2}">%</text>`+
+    `<line id="cx" y1="${T}" y2="${T+ph}" stroke="var(--ink)" stroke-opacity=".4" visibility="hidden"/>`+
+    `<rect x="${L}" y="${T}" width="${pw}" height="${ph}" fill="transparent" id="chit"/>`;
+  const hit=$('chit'),cx=$('cx');
+  const show=ev=>{const r=svg.getBoundingClientRect(),x=(ev.clientX-r.left)/r.width*W;const tm=tStart+(x-L)/pw*(tEnd-tStart);
+    const i=Math.min(n-1,Math.max(i0,Math.round((tm-TR.t0)/step)));const xx=X(TR.t0+i*step);cx.setAttribute('x1',xx);cx.setAttribute('x2',xx);cx.setAttribute('visibility','visible');
+    const d=new Date(TR.t0+i*step);$('readout').textContent=`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')} · ${TR.P[i]??'—'} bar · ${TR.S[i]??'—'}% · ${TR.R[i]??'—'} ${t('tr_r')}`};
+  hit.onpointermove=show;hit.onpointerdown=show;
+}
 /* ---------- navigation ---------- */
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('act',x===b));
-  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('act',v.id==='v-'+b.dataset.v));window.scrollTo(0,0)});
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('act',v.id==='v-'+b.dataset.v));window.scrollTo(0,0);
+  clearInterval(trTimer);if(b.dataset.v==='trend'){drawChart();askTrend();trTimer=setInterval(askTrend,60000)}
+  if(b.dataset.v==='alarms'&&!$('apane-hist').hidden)askHist()});
 
 (function init(){
   applyLang();
