@@ -186,6 +186,11 @@ nav{grid-template-columns:repeat(5,minmax(0,1fr))}nav button{font-size:12px}
     <label class="f"><span><span data-t="l_pset">الضغط المطلوب</span><small>bar</small></span><input type="number" step="0.1" id="s-pSet"></label>
     <div id="s-en"></div>
   </div>
+  <div class="card" id="sens-card">
+    <h2 data-t="h_sens">حساس الضغط</h2>
+    <p class="lock" id="lockmsg2" data-t="lockmsg">مقفلة.</p>
+    <div id="sens"></div>
+  </div>
   <div class="card">
     <h2 data-t="h_tech">إعدادات الفني</h2>
     <p class="lock" id="lockmsg" data-t="lockmsg">مقفلة. أدخل رمز الفني في صفحة الاتصال لفتحها.</p>
@@ -213,7 +218,7 @@ nav{grid-template-columns:repeat(5,minmax(0,1fr))}nav button{font-size:12px}
     <label class="f"><span><span data-t="l_pin">رمز الفني</span><small data-t="l_pin_s">يفتح إعدادات الفني</small></span><input id="c-pin" type="password" inputmode="numeric" dir="ltr"></label>
     <div class="row"><button class="sec" id="b-pin" data-t="b_pin">فتح إعدادات الفني</button></div>
     <p class="note" id="c-msg"></p>
-    <p class="note" dir="ltr" style="text-align:center;opacity:.6">VISION app v1.7 · 2026-11-22</p>
+    <p class="note" dir="ltr" style="text-align:center;opacity:.6">VISION app v1.8 · 2026-11-22</p>
   </div>
 </section>
 </main>
@@ -275,10 +280,10 @@ cn_ing:'جارٍ الاتصال…',cn_fail:'فشل',m_lib:'تعذّر تحمي�
 cn_re:'إعادة الاتصال…',cn_auth:'رفض الدخول',m_auth:'الرمز غير صحيح أو أُلغيت صلاحيتك. راجع الفني.',m_err:'خطأ: ',cn_demo:'وضع العرض',demo_name:'بيانات تجريبية',
 t_demo:'وضع العرض: بيانات تجريبية',d_open:'مفتوح',d_use:'فتح',d_del:'حذف',d_none:'لا توجد أجهزة بعد. اضغط "إضافة جهاز".',
 a_FAIL:'مضخة {n}: فشل تشغيل الكونتاكتور {k} - لم تعد إشارة Feedback',a_TRIP:'مضخة {n}: سقط الكونتاكتور {k} أثناء التشغيل (أوفرلود أو فصل)',a_STUCK:'مضخة {n}: الكونتاكتور {k} عالق - Feedback بدون أمر',
-a_SENSOR:'عطل حساس الضغط (الإشارة خارج 4-20mA)',a_VFD:'عطل الانفيرتر',a_WATER:'مستوى الماء منخفض - حماية التشغيل على الجاف',a_PHIGH:'ضغط عالٍ جداً ({p} bar) - توقف النظام',a_PLOW:'ضغط منخفض ({p} bar) رغم تشغيل المضخات',
+a_SENSOR:'عطل حساس الضغط (الإشارة خارج المدى)',a_VFD:'عطل الانفيرتر',a_WATER:'مستوى الماء منخفض - حماية التشغيل على الجاف',a_PHIGH:'ضغط عالٍ جداً ({p} bar) - توقف النظام',a_PLOW:'ضغط منخفض ({p} bar) رغم تشغيل المضخات',
 sec:'ثانية',
 f_nPumps:'عدد المضخات المركّبة',f_pRange:'مدى حساس الضغط',f_spdMin:'أقل سرعة للانفيرتر',f_kp:'معامل PI (Kp)',f_ti:'زمن التكامل (Ti)',f_tUp:'زمن إضافة مضخة',f_tDown:'زمن فصل مضخة',
-f_tSleep:'زمن النوم',f_stopBand:'فرق النوم',f_wakeBand:'فرق الاستيقاظ',f_tFb:'مهلة Feedback الكونتاكتور',f_tChange:'زمن النقل VFD→DOL',f_pHigh:'حد الضغط العالي',f_pLow:'حد الضغط المنخفض',f_tLow:'مهلة الضغط المنخفض',f_sim:'وضع المحاكاة',f_noWater:'إلغاء حساس المستوى (بدون حماية الجاف)',c_nowater:'حساس المستوى ملغى',
+f_tSleep:'زمن النوم',f_stopBand:'فرق النوم',f_wakeBand:'فرق الاستيقاظ',f_tFb:'مهلة Feedback الكونتاكتور',f_tChange:'زمن النقل VFD→DOL',f_pHigh:'حد الضغط العالي',f_pLow:'حد الضغط المنخفض',f_tLow:'مهلة الضغط المنخفض',f_sim:'وضع المحاكاة',h_sens:'حساس الضغط',f_sigType:'نوع إشارة الدخول',f_pMin:'أقل قيمة للحساس',f_pRange:'أعلى قيمة للحساس (الرينج)',t_rangebad:'أعلى قيمة للحساس يجب أن تكون أكبر من أقل قيمة',n_420:'4-20mA: إذا انقطع سلك الحساس (أقل من 3.5mA) يظهر إنذار عطل الحساس وتتوقف المضخات.',n_020:'⚠ 0-20mA: لا يمكن كشف انقطاع سلك الحساس، لأن 0mA تُقرأ كضغط صفر. يُفضَّل 4-20mA.',f_noWater:'إلغاء حساس المستوى (بدون حماية الجاف)',c_nowater:'حساس المستوى ملغى',
 th_dark:'الوضع الليلي',th_light:'الوضع النهاري',
 a_active:'الحالية',a_hist:'السجل',b_refresh:'تحديث',nav_trend:'التريند',tr_p:'الضغط bar',tr_ps:'المطلوب',tr_s:'سرعة الانفيرتر %',tr_r:'مضخات تعمل',
 tr_note:'متوسط كل دقيقة، آخر 48 ساعة، محفوظ داخل الجهاز.',tr_none:'لا توجد بيانات بعد. تُسجَّل نقطة كل دقيقة.',loading:'جارٍ التحميل…',h_none:'السجل فارغ',
@@ -310,10 +315,10 @@ cn_ing:'Connecting…',cn_fail:'Failed',m_lib:'Could not load the connection lib
 cn_re:'Reconnecting…',cn_auth:'Access denied',m_auth:'Wrong code or your access was revoked. Contact your technician.',m_err:'Error: ',cn_demo:'Demo mode',demo_name:'Demo data',
 t_demo:'Demo mode: sample data',d_open:'Open',d_use:'Open',d_del:'Remove',d_none:'No devices yet. Press "Add device".',
 a_FAIL:'Pump {n}: {k} contactor failed to close - no feedback',a_TRIP:'Pump {n}: {k} contactor dropped while running (overload or trip)',a_STUCK:'Pump {n}: {k} contactor stuck - feedback without command',
-a_SENSOR:'Pressure sensor fault (signal outside 4-20mA)',a_VFD:'VFD fault',a_WATER:'Low water level - dry-run protection',a_PHIGH:'Pressure too high ({p} bar) - system stopped',a_PLOW:'Low pressure ({p} bar) although pumps are running',
+a_SENSOR:'Pressure sensor fault (signal out of range)',a_VFD:'VFD fault',a_WATER:'Low water level - dry-run protection',a_PHIGH:'Pressure too high ({p} bar) - system stopped',a_PLOW:'Low pressure ({p} bar) although pumps are running',
 sec:'s',
 f_nPumps:'Installed pumps',f_pRange:'Pressure sensor range',f_spdMin:'VFD minimum speed',f_kp:'PI gain (Kp)',f_ti:'Integral time (Ti)',f_tUp:'Pump add delay',f_tDown:'Pump remove delay',
-f_tSleep:'Sleep delay',f_stopBand:'Sleep band',f_wakeBand:'Wake band',f_tFb:'Contactor feedback timeout',f_tChange:'VFD→DOL transfer time',f_pHigh:'High pressure limit',f_pLow:'Low pressure limit',f_tLow:'Low pressure delay',f_sim:'Simulation mode',f_noWater:'Bypass level sensor (no dry-run protection)',c_nowater:'Level sensor bypassed',
+f_tSleep:'Sleep delay',f_stopBand:'Sleep band',f_wakeBand:'Wake band',f_tFb:'Contactor feedback timeout',f_tChange:'VFD→DOL transfer time',f_pHigh:'High pressure limit',f_pLow:'Low pressure limit',f_tLow:'Low pressure delay',f_sim:'Simulation mode',h_sens:'Pressure sensor',f_sigType:'Input signal type',f_pMin:'Sensor minimum',f_pRange:'Sensor maximum (range)',t_rangebad:'Sensor maximum must be greater than minimum',n_420:'4-20mA: a broken sensor wire (below 3.5mA) raises a sensor fault and stops the pumps.',n_020:'⚠ 0-20mA: a broken wire cannot be detected (0mA reads as zero pressure). 4-20mA is preferred.',f_noWater:'Bypass level sensor (no dry-run protection)',c_nowater:'Level sensor bypassed',
 th_dark:'Night mode',th_light:'Day mode',
 a_active:'Active',a_hist:'History',b_refresh:'Refresh',nav_trend:'Trends',tr_p:'Pressure bar',tr_ps:'Setpoint',tr_s:'VFD speed %',tr_r:'Pumps running',
 tr_note:'1-minute averages, last 48 hours, stored in the device.',tr_none:'No data yet. One point is logged every minute.',loading:'Loading…',h_none:'History is empty',
@@ -352,7 +357,7 @@ $('b-lang').onclick=()=>{LANG=LANG==='ar'?'en':'ar';store.set('lang',LANG);apply
 $('b-theme').onclick=()=>{const dark=THEME?THEME==='dark':matchMedia('(prefers-color-scheme: dark)').matches;THEME=dark?'light':'dark';store.set('theme',THEME);applyTheme()};
 let S = null, client = null, demoTimer = null, liveTimer = null, mode = 'off', admin = false, draft = null;
 
-const ADV = [['nPumps','1 - 6'],['pRange','bar (20mA)'],['spdMin','%'],['kp','%/bar'],['ti','sec'],['tUp','sec'],['tDown','sec'],['tSleep','sec'],['stopBand','bar'],['wakeBand','bar'],['tFb','sec'],['tChange','sec'],['pHigh','bar'],['pLow','bar'],['tLow','sec'],['noWater','bool'],['sim','bool']];
+const ADV = [['nPumps','1 - 6'],['spdMin','%'],['kp','%/bar'],['ti','sec'],['tUp','sec'],['tDown','sec'],['tSleep','sec'],['stopBand','bar'],['wakeBand','bar'],['tFb','sec'],['tChange','sec'],['pHigh','bar'],['pLow','bar'],['tLow','sec'],['noWater','bool'],['sim','bool']];
 
 function toast(t){const e=$('toast');e.textContent=t;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),2600)}
 function setConn(cls,key){connCls=cls;connKey=key;$('cdot').className='dot '+cls;$('ctext').textContent=t(key)}
@@ -440,7 +445,12 @@ function fillSettings(set){
   const en=set.enabled||[true,true,true,true,true,true], np=Math.min(Math.max(parseInt(set.nPumps)||6,1),6);
   $('s-en').innerHTML=en.slice(0,np).map((e,i)=>`<label class="f"><span>${t('pump')} ${i+1} ${t('in_service')}</span><input type="checkbox" data-en="${i}" ${e?'checked':''}></label>`).join('');
   $('adv').innerHTML=admin?ADV.map(([k,u])=>`<label class="f"><span>${t('f_'+k)}<small>${u==='bool'?'':u==='sec'?t('sec'):u}</small></span>${u==='bool'?`<input type="checkbox" data-k="${k}" ${set[k]?'checked':''}>`:(k==='nPumps'?`<select data-k="nPumps">${[1,2,3,4,5,6].map(n=>`<option ${n===np?'selected':''}>${n}</option>`).join('')}</select>`:`<input type="number" step="any" data-k="${k}" value="${set[k]??''}">`)}</label>`).join(''):'';
-  $('lockmsg').hidden=admin;
+  $('lockmsg').hidden=admin;$('lockmsg2').hidden=admin;
+  const sg=set.sigType||'4-20';
+  $('sens').innerHTML=admin?`<label class="f"><span>${t('f_sigType')}</span><select data-k="sigType" data-s="1" dir="ltr"><option value="4-20" ${sg==='4-20'?'selected':''}>4 - 20 mA</option><option value="0-20" ${sg==='0-20'?'selected':''}>0 - 20 mA</option></select></label>
+   <label class="f"><span>${t('f_pMin')}<small>bar · ${sg==='0-20'?'0':'4'} mA</small></span><input type="number" step="any" data-k="pMin" value="${set.pMin??0}"></label>
+   <label class="f"><span>${t('f_pRange')}<small>bar · 20 mA</small></span><input type="number" step="any" data-k="pRange" value="${set.pRange??10}"></label>
+   <p class="note">${t(sg==='0-20'?'n_020':'n_420')}</p>`:'';
 }
 document.addEventListener('input',e=>{if(e.target.closest('#v-settings'))draft=true});
 
@@ -455,11 +465,13 @@ $('b-en1').onclick=()=>{send('enable',true);toast(t('t_en1'))};
 $('b-en0').onclick=()=>{send('enable',false);toast(t('t_en0'))};
 $('b-reset').onclick=()=>{send('reset',true);toast(t('t_reset'))};
 $('b-undo').onclick=()=>{draft=null;if(S)fillSettings(S.settings||{});toast(t('t_undo'))};
+$('sens').onchange=e=>{if(e.target.dataset.k==='sigType'){draft=1;const n=$('sens').querySelector('.note');n.textContent=t(e.target.value==='0-20'?'n_020':'n_420');$('sens').querySelector('[data-k=pMin]').previousElementSibling.querySelector('small').textContent='bar · '+(e.target.value==='0-20'?'0':'4')+' mA'}};
 $('b-save').onclick=()=>{
   const p={};const v=parseFloat($('s-pSet').value);if(!isNaN(v))p.pSet=v;
   const cur=((S&&S.settings&&S.settings.enabled)||[true,true,true,true,true,true]).slice();
   document.querySelectorAll('[data-en]').forEach(c=>cur[+c.dataset.en]=c.checked);p.enabled=cur;
-  if(admin)document.querySelectorAll('[data-k]').forEach(i=>{p[i.dataset.k]=i.type==='checkbox'?i.checked:(i.dataset.k==='nPumps'?parseInt(i.value):parseFloat(i.value))});
+  if(admin)document.querySelectorAll('[data-k]').forEach(i=>{p[i.dataset.k]=i.type==='checkbox'?i.checked:i.dataset.s?i.value:(i.dataset.k==='nPumps'?parseInt(i.value):parseFloat(i.value))});
+  if(p.pRange!==undefined&&p.pMin!==undefined&&!(p.pRange>p.pMin)){toast(t('t_rangebad'));return}
   for(const k in p)if(typeof p[k]==='number'&&isNaN(p[k]))delete p[k];
   if(p.pSet!==undefined&&(p.pSet<0.5||p.pSet>((S&&S.settings&&S.settings.pHigh)||8)-0.5)){toast(t('t_psetbad'));return}
   send('settings',p);draft=null;toast(t('t_sent'));
