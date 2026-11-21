@@ -218,7 +218,7 @@ nav{grid-template-columns:repeat(5,minmax(0,1fr))}nav button{font-size:12px}
     <label class="f"><span><span data-t="l_pin">رمز الفني</span><small data-t="l_pin_s">يفتح إعدادات الفني</small></span><input id="c-pin" type="password" inputmode="numeric" dir="ltr"></label>
     <div class="row"><button class="sec" id="b-pin" data-t="b_pin">فتح إعدادات الفني</button></div>
     <p class="note" id="c-msg"></p>
-    <p class="note" dir="ltr" style="text-align:center;opacity:.6">VISION app v1.8 · 2026-11-22</p>
+    <p class="note" dir="ltr" style="text-align:center;opacity:.6">VISION app v1.9 · 2026-11-22</p>
   </div>
 </section>
 </main>
@@ -438,9 +438,11 @@ function render(s){
   const al=s.alarms||[];
   $('abadge').hidden=!al.length;$('abadge').textContent=al.length;
   $('alarms').innerHTML=al.length?al.map(a=>`<div class="alarm ${a.active?'':'cleared'}"><i></i><div>${esc(alarmText(a))}<small>${new Date(a.t).toLocaleString(LANG==='ar'?'ar-IQ':'en-GB')}${a.active?'':t('cleared')}</small></div></div>`).join(''):`<div class="empty">${t('noalarms')}</div>`;
-  if(!draft) fillSettings(set);
+  const sig=JSON.stringify(set)+admin+LANG;if(!draft&&sig!==lastSetSig)fillSettings(set);   // rebuild only when settings really changed
 }
+let lastSetSig='';
 function fillSettings(set){
+  lastSetSig=JSON.stringify(set)+admin+LANG;
   $('s-pSet').value=set.pSet??'';
   const en=set.enabled||[true,true,true,true,true,true], np=Math.min(Math.max(parseInt(set.nPumps)||6,1),6);
   $('s-en').innerHTML=en.slice(0,np).map((e,i)=>`<label class="f"><span>${t('pump')} ${i+1} ${t('in_service')}</span><input type="checkbox" data-en="${i}" ${e?'checked':''}></label>`).join('');
@@ -453,6 +455,7 @@ function fillSettings(set){
    <p class="note">${t(sg==='0-20'?'n_020':'n_420')}</p>`:'';
 }
 document.addEventListener('input',e=>{if(e.target.closest('#v-settings'))draft=true});
+['focusin','pointerdown'].forEach(ev=>document.addEventListener(ev,e=>{if(e.target.closest&&e.target.closest('#v-settings select, #v-settings input'))draft=true}));
 
 /* ---------- commands ---------- */
 function send(cmd,payload){
