@@ -49,9 +49,10 @@ button:focus-visible,input:focus-visible{outline:3px solid #f2a516;outline-offse
     <label>عنوان السيرفر<input id="u" dir="ltr" value="wss://y306863e.ala.eu-central-1.emqxsl.com:8084/mqtt"></label>
     <label>مستخدم التطبيق لهذا الجهاز<input id="a" dir="ltr" value="app-em300-01"></label>
     <label>كلمة مرور مستخدم التطبيق<input id="p" type="password" dir="ltr" autocomplete="off"></label>
+    <label style="display:flex;gap:8px;align-items:center"><input id="sec" type="checkbox" checked style="width:22px;min-height:22px;margin:0"> لا تضع كلمة المرور في الباركود (يطلب التطبيق الرمز عند الإضافة)</label>
     <label>رابط التطبيق<input id="app" dir="ltr" value="https://mostafadabool.github.io/vision-app/"></label>
     <div><button id="gen">إنشاء الباركود</button><button class="sec" id="print">طباعة الملصق</button><button class="sec" id="copy">نسخ رابط الإضافة</button></div>
-    <p class="warn">الباركود يحتوي على بيانات دخول هذا الجهاز فقط. ضع الملصق <b>داخل باب البورد</b>، واجعل لكل جهاز مستخدماً خاصاً في EMQX لا يرى إلا مواضيع جهازه.</p>
+    <p class="warn">اجعل لكل شخص مستخدماً خاصاً في EMQX (مثل app-em300-01-ali) وأنشئ له باركوداً، فتستطيع إلغاء صلاحيته وحده. ضع الملصق <b>داخل باب البورد</b>، واجعل لكل جهاز مستخدماً خاصاً في EMQX لا يرى إلا مواضيع جهازه.</p>
     <p class="note" id="msg"></p>
   </section>
   <section class="card">
@@ -69,9 +70,9 @@ const $=id=>document.getElementById(id);
 const b64e=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 let link='';
 function gen(){
-  const o={v:1,n:$('n').value.trim(),d:$('d').value.trim(),u:$('u').value.trim(),a:$('a').value.trim(),p:$('p').value};
+  const o={v:1,n:$('n').value.trim(),d:$('d').value.trim(),u:$('u').value.trim(),a:$('a').value.trim(),p:$('sec').checked?'':$('p').value};
   if(!o.d||!o.u){$('msg').textContent='اكتب رقم الجهاز وعنوان السيرفر.';return}
-  if(!o.p){$('msg').textContent='تنبيه: بدون كلمة مرور لن يتصل التطبيق.';}else $('msg').textContent='';
+  $('msg').textContent=o.p?'تنبيه: كلمة المرور داخل الباركود - من يصوّره يستطيع الإضافة.':'الباركود بدون كلمة مرور: أعطِ الرمز فقط للأشخاص المسموح لهم.';
   link=$('app').value.trim().replace(/#.*$/,'')+'#add='+b64e(o);
   if(!window.qrcode){$('msg').textContent='تعذّر تحميل مكتبة الباركود - تأكد من الإنترنت.';return}
   const q=qrcode(0,'M');q.addData(link);q.make();

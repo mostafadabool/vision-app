@@ -171,6 +171,14 @@ details.card summary{cursor:pointer;min-height:32px}
 </section>
 </main>
 
+<div class="scan" id="askp" hidden>
+  <div class="card" style="color:var(--ink);text-align:start;min-width:min(86vw,360px)">
+    <h2 id="askt">رمز الجهاز</h2>
+    <p class="note">هذا الجهاز محمي. اكتب رمز الدخول الذي أعطاك إياه الفني.</p>
+    <input id="askv" type="password" dir="ltr" autocomplete="off" style="margin:8px 0">
+    <div class="row"><button id="asko">إضافة</button><button class="sec" id="askx">إلغاء</button></div>
+  </div>
+</div>
 <div class="scan" id="scan" hidden>
   <div class="scanbox"><video id="scanv" playsinline muted></video><i class="frame"></i></div>
   <p id="scanmsg">وجّه الكاميرا نحو باركود الجهاز</p>
@@ -293,6 +301,9 @@ function parseCode(txt){
   txt=String(txt||'').trim();let m=txt.match(/#add=([A-Za-z0-9_-]+)/)||txt.match(/^VISION:([A-Za-z0-9_-]+)$/);
   if(!m)return null;try{const o=b64d(m[1]);if(o&&o.u&&o.d)return o}catch(e){}return null}
 function addDevice(o,quiet){
+  if(!o.p&&!quiet){$('askt').textContent='رمز الجهاز: '+(o.n||o.d);$('askv').value='';$('askp').hidden=false;$('askv').focus();
+    $('asko').onclick=()=>{const v=$('askv').value;if(!v){$('askv').focus();return}$('askp').hidden=true;addDevice(Object.assign({},o,{p:v}))};
+    $('askx').onclick=()=>{$('askp').hidden=true};return}
   const dev={n:o.n||o.d,u:o.u,d:o.d,a:o.a||'',p:o.p||''};
   const i=devices.findIndex(x=>x.d===dev.d);if(i>=0)devices[i]=dev;else devices.push(dev);
   activeId=dev.d;saveDevs();renderDevs();if(!quiet)toast('أُضيف الجهاز: '+dev.n);connect();
@@ -347,7 +358,7 @@ async function connect(){
   mode='mqtt';
   client.on('connect',()=>{setConn('ok','متصل');client.subscribe([base()+'/status',base()+'/alarm'],{qos:1});ping();clearInterval(liveTimer);liveTimer=setInterval(ping,60000)});
   client.on('reconnect',()=>setConn('','إعادة الاتصال…'));
-  client.on('error',e=>{setConn('bad','خطأ');$('c-msg').textContent='خطأ: '+(e&&e.message||e)});
+  client.on('error',e=>{const m=String(e&&e.message||e);setConn('bad',/auth|password|5/i.test(m)?'رفض الدخول':'خطأ');$('c-msg').textContent=/auth|password/i.test(m)?'الرمز غير صحيح أو أُلغيت صلاحيتك. راجع الفني.':'خطأ: '+m});
   client.on('message',(t,m)=>{if(!t.startsWith(base()+'/'))return;let d;try{d=JSON.parse(m.toString())}catch(e){return}
     if(t.endsWith('/status'))render(d);else if(t.endsWith('/alarm')&&Array.isArray(d))d.forEach(a=>toast('⚠ '+a.text))});
 }
