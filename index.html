@@ -7,7 +7,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>رؤية - البوستر</title>
+<title>VISION</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -129,7 +129,7 @@ nav{grid-template-columns:repeat(5,minmax(0,1fr))}nav button{font-size:12px}
 <radialGradient id="gEye" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#1d3550"/><stop offset="1" stop-color="#0a1726"/></radialGradient>
 </defs></svg>
 <header>
-  <div class="logo">رؤية · VISION<small>just push the button</small></div>
+  <div class="logo">VISION<small>just push the button</small></div>
   <div class="hctl"><button class="hb" id="b-lang" aria-label="Language">EN</button><button class="hb" id="b-theme" aria-label="Theme"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path id="themeic" d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button></div>
   <div class="dev"><span class="dot" id="cdot"></span><span id="ctext" data-t="offline">غير متصل</span><br><span id="devname" class="note" style="color:#bcd">—</span><select id="devsel" hidden aria-label="اختيار الجهاز"></select></div>
 </header>
@@ -218,7 +218,7 @@ nav{grid-template-columns:repeat(5,minmax(0,1fr))}nav button{font-size:12px}
     <label class="f"><span><span data-t="l_pin">رمز الفني</span><small data-t="l_pin_s">يفتح إعدادات الفني</small></span><input id="c-pin" type="password" inputmode="numeric" dir="ltr"></label>
     <div class="row"><button class="sec" id="b-pin" data-t="b_pin">فتح إعدادات الفني</button></div>
     <p class="note" id="c-msg"></p>
-    <p class="note" dir="ltr" style="text-align:center;opacity:.6">VISION app v1.9 · 2026-11-22</p>
+    <p class="note" dir="ltr" style="text-align:center;opacity:.6">VISION app v1.10 · 2026-11-22</p>
   </div>
 </section>
 </main>
@@ -259,7 +259,7 @@ const ADMIN_PIN = '2580';          // change before giving the app to a customer
 const $ = id => document.getElementById(id);
 const store = { get(k){try{return localStorage.getItem('vb_'+k)}catch(e){return null}}, set(k,v){try{localStorage.setItem('vb_'+k,v)}catch(e){}} };
 const I18N={
-ar:{title:'رؤية - البوستر',gauge:'مؤشر الضغط',askt:'رمز الجهاز',scanmsg:'وجّه الكاميرا نحو باركود الجهاز',
+ar:{title:'VISION',gauge:'مؤشر الضغط',askt:'رمز الجهاز',scanmsg:'وجّه الكاميرا نحو باركود الجهاز',
 offline:'غير متصل',setpoint:'الضغط المطلوب',k_hz:'تردد الانفيرتر Hz',k_run:'مضخات تعمل',k_state:'حالة النظام',h_pumps:'المضخات',
 leg_vfd:'على الانفيرتر',leg_dol:'مباشر',leg_fault:'عطل',h_remote:'التشغيل عن بعد',b_en1:'تشغيل النظام',b_en0:'إيقاف النظام',
 n_remote:'الإيقاف عن بعد يوقف كل المضخات.',h_alarms:'الإنذارات',b_reset:'Reset الإنذارات',h_cust:'إعدادات الزبون',l_pset:'الضغط المطلوب',
@@ -278,7 +278,7 @@ m_need:'اكتب عنوان السيرفر ورقم الجهاز.',t_pinok:'فُ
 sc_cam:'لا يمكن فتح الكاميرا. اسمح للتطبيق باستخدام الكاميرا، أو امسح الباركود بكاميرا الهاتف.',sc_bad:'هذا الباركود ليس لجهاز VISION',
 cn_ing:'جارٍ الاتصال…',cn_fail:'فشل',m_lib:'تعذّر تحميل مكتبة الاتصال. تأكد من الإنترنت.',cn_err:'خطأ',m_url:'عنوان غير صالح.',cn_ok:'متصل',
 cn_re:'إعادة الاتصال…',cn_auth:'رفض الدخول',m_auth:'الرمز غير صحيح أو أُلغيت صلاحيتك. راجع الفني.',m_err:'خطأ: ',cn_demo:'وضع العرض',demo_name:'بيانات تجريبية',
-t_demo:'وضع العرض: بيانات تجريبية',d_open:'مفتوح',d_use:'فتح',d_del:'حذف',d_none:'لا توجد أجهزة بعد. اضغط "إضافة جهاز".',
+t_demo:'وضع العرض: بيانات تجريبية',d_open:'مفتوح',d_use:'فتح',d_del:'حذف',d_ren:'تغيير اسم الجهاز',b_save_s:'حفظ',d_none:'لا توجد أجهزة بعد. اضغط "إضافة جهاز".',
 a_FAIL:'مضخة {n}: فشل تشغيل الكونتاكتور {k} - لم تعد إشارة Feedback',a_TRIP:'مضخة {n}: سقط الكونتاكتور {k} أثناء التشغيل (أوفرلود أو فصل)',a_STUCK:'مضخة {n}: الكونتاكتور {k} عالق - Feedback بدون أمر',
 a_SENSOR:'عطل حساس الضغط (الإشارة خارج المدى)',a_VFD:'عطل الانفيرتر',a_WATER:'مستوى الماء منخفض - حماية التشغيل على الجاف',a_PHIGH:'ضغط عالٍ جداً ({p} bar) - توقف النظام',a_PLOW:'ضغط منخفض ({p} bar) رغم تشغيل المضخات',
 sec:'ثانية',
@@ -294,7 +294,7 @@ i_last:'آخر تشغيل',i_mode:'الطريقة',i_fbv:'كونتاكتور VFD
 n_man:'اليدوي يشغّل المضخة مباشرة (DOL) ويخرجها من التسلسل الآلي. تبقى الحمايات فعّالة: الماء، الضغط العالي، العطل، الإيقاف عن بعد.',
 n_manblk:'⚠ التشغيل اليدوي ممنوع الآن (النظام موقوف عن بعد أو ماء منخفض أو ضغط عالٍ).',n_lockp:'التحكم اليدوي يحتاج رمز الفني.',n_dis:'المضخة خارج الخدمة. فعّلها من الإعدادات أولاً.',
 t_cmd:'أُرسل الأمر',t_man:'المضخة على يدوي'},
-en:{title:'VISION - Booster',gauge:'Pressure gauge',askt:'Device code',scanmsg:'Point the camera at the device QR code',
+en:{title:'VISION',gauge:'Pressure gauge',askt:'Device code',scanmsg:'Point the camera at the device QR code',
 offline:'Offline',setpoint:'Setpoint',k_hz:'VFD frequency Hz',k_run:'Pumps running',k_state:'System state',h_pumps:'Pumps',
 leg_vfd:'On VFD',leg_dol:'Direct (DOL)',leg_fault:'Fault',h_remote:'Remote operation',b_en1:'Start system',b_en0:'Stop system',
 n_remote:'Remote stop stops all pumps.',h_alarms:'Alarms',b_reset:'Reset alarms',h_cust:'Customer settings',l_pset:'Pressure setpoint',
@@ -313,7 +313,7 @@ m_need:'Enter the server address and device ID.',t_pinok:'Technician settings un
 sc_cam:'Cannot open the camera. Allow camera access, or scan the QR with the phone camera.',sc_bad:'This QR code is not a VISION device',
 cn_ing:'Connecting…',cn_fail:'Failed',m_lib:'Could not load the connection library. Check the internet.',cn_err:'Error',m_url:'Invalid address.',cn_ok:'Connected',
 cn_re:'Reconnecting…',cn_auth:'Access denied',m_auth:'Wrong code or your access was revoked. Contact your technician.',m_err:'Error: ',cn_demo:'Demo mode',demo_name:'Demo data',
-t_demo:'Demo mode: sample data',d_open:'Open',d_use:'Open',d_del:'Remove',d_none:'No devices yet. Press "Add device".',
+t_demo:'Demo mode: sample data',d_open:'Open',d_use:'Open',d_del:'Remove',d_ren:'Rename device',b_save_s:'Save',d_none:'No devices yet. Press "Add device".',
 a_FAIL:'Pump {n}: {k} contactor failed to close - no feedback',a_TRIP:'Pump {n}: {k} contactor dropped while running (overload or trip)',a_STUCK:'Pump {n}: {k} contactor stuck - feedback without command',
 a_SENSOR:'Pressure sensor fault (signal out of range)',a_VFD:'VFD fault',a_WATER:'Low water level - dry-run protection',a_PHIGH:'Pressure too high ({p} bar) - system stopped',a_PLOW:'Low pressure ({p} bar) although pumps are running',
 sec:'s',
@@ -484,6 +484,7 @@ $('b-save').onclick=()=>{
 function loadMqtt(){return new Promise((ok,no)=>{if(window.mqtt)return ok();const s=document.createElement('script');s.src='https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js';s.onload=ok;s.onerror=()=>no(new Error('lib'));document.head.appendChild(s)})}
 /* ---------- devices (Tuya-style: add by QR) ---------- */
 let devices=[];try{devices=JSON.parse(store.get('devices')||'[]')}catch(e){devices=[]}
+if(devices.some(d=>d.n==='بوستر 6 مضخات')){devices.forEach(d=>{if(d.n==='بوستر 6 مضخات')d.n='Demo Panel'});store.set('devices',JSON.stringify(devices))}
 let activeId=store.get('active')||'';
 const cur=()=>devices.find(d=>d.d===activeId)||devices[0];
 function saveDevs(){store.set('devices',JSON.stringify(devices));store.set('active',activeId)}
@@ -501,13 +502,18 @@ function addDevice(o,quiet){
   activeId=dev.d;saveDevs();renderDevs();if(!quiet)toast(t('t_added')+dev.n);connect();
 }
 function renderDevs(){
-  $('devlist').innerHTML=devices.length?devices.map(d=>`<div class="dev ${d.d===activeId?'on':''}"><div class="nm"><b>${esc(d.n)}</b><small dir="ltr">${esc(d.d)}</small></div><button class="sec" data-use="${esc(d.d)}">${d.d===activeId?t('d_open'):t('d_use')}</button><button class="sec" data-del="${esc(d.d)}" aria-label="${t('d_del')}">✕</button></div>`).join(''):`<div class="empty">${t('d_none')}</div>`;
+  $('devlist').innerHTML=devices.length?devices.map(d=>`<div class="dev ${d.d===activeId?'on':''}"><div class="nm"><b>${esc(d.n)}</b><small dir="ltr">${esc(d.d)}</small></div><button class="sec" data-use="${esc(d.d)}">${d.d===activeId?t('d_open'):t('d_use')}</button><button class="sec" data-ren="${esc(d.d)}" aria-label="${t('d_ren')}">✎</button><button class="sec" data-del="${esc(d.d)}" aria-label="${t('d_del')}">✕</button></div>`).join(''):`<div class="empty">${t('d_none')}</div>`;
   const sel=$('devsel');sel.hidden=devices.length<2;
   sel.innerHTML=devices.map(d=>`<option value="${esc(d.d)}" ${d.d===activeId?'selected':''}>${esc(d.n)}</option>`).join('');
   $('devname').hidden=devices.length>=2;
 }
 function esc(t){return String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-$('devlist').onclick=e=>{const u=e.target.dataset.use,d=e.target.dataset.del;
+$('devlist').onclick=e=>{const u=e.target.dataset.use,d=e.target.dataset.del,rn=e.target.dataset.ren;
+  if(rn){const dv=devices.find(x=>x.d===rn);if(!dv)return;$('askt').textContent=t('d_ren');$('askp').querySelector('.note').hidden=true;
+    const iv=$('askv');iv.type='text';iv.dir='auto';iv.value=dv.n;$('asko').textContent=t('b_save_s');$('askp').hidden=false;iv.focus();iv.select();
+    const done=()=>{$('askp').hidden=true;iv.type='password';iv.dir='ltr';$('askp').querySelector('.note').hidden=false;$('asko').textContent=t('b_ok')};
+    $('asko').onclick=()=>{const v=iv.value.trim();if(!v){iv.focus();return}dv.n=v;saveDevs();renderDevs();if(dv.d===activeId&&mode!=='demo')$('devname').textContent=v;done()};
+    $('askx').onclick=done;return}
   if(u){activeId=u;saveDevs();renderDevs();connect()}
   if(d){if(d===$('devlist').dataset.confirm){devices=devices.filter(x=>x.d!==d);if(activeId===d)activeId=(devices[0]||{}).d||'';saveDevs();renderDevs();$('devlist').dataset.confirm='';toast(t('t_del'));if(devices.length)connect();else startDemo()}
         else{$('devlist').dataset.confirm=d;toast(t('t_delc'))}}};
