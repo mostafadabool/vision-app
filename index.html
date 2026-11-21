@@ -99,7 +99,8 @@ nav{grid-template-columns:repeat(5,minmax(0,1fr))}nav button{font-size:12px}
 .hrow{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
 .hrow:last-child{border:0}.hrow i{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:12px;color:#fff;margin-top:1px}
 .hrow i.ON{background:var(--bad)}.hrow i.OFF{background:var(--dol)}.hrow i.CMD{background:var(--water)}
-.hrow small{display:block;color:var(--mut);font-size:12px}
+.hrow small{display:block;color:var(--mut);font-size:12px}.hrow>div{flex:1;min-width:0;overflow-wrap:anywhere}
+.alarm>div{flex:1;min-width:0;overflow-wrap:anywhere}
 .pump{cursor:pointer}.pump:active{transform:scale(.98)}
 .pump .mtag{position:absolute;top:-7px;inset-inline-start:8px;font-size:10px;font-weight:700;background:var(--vfd);color:#000;border-radius:6px;padding:0 5px}
 .sheet[hidden]{display:none!important}
@@ -212,7 +213,7 @@ nav{grid-template-columns:repeat(5,minmax(0,1fr))}nav button{font-size:12px}
     <label class="f"><span><span data-t="l_pin">رمز الفني</span><small data-t="l_pin_s">يفتح إعدادات الفني</small></span><input id="c-pin" type="password" inputmode="numeric" dir="ltr"></label>
     <div class="row"><button class="sec" id="b-pin" data-t="b_pin">فتح إعدادات الفني</button></div>
     <p class="note" id="c-msg"></p>
-    <p class="note" dir="ltr" style="text-align:center;opacity:.6">VISION app v1.6 · 2026-11-22</p>
+    <p class="note" dir="ltr" style="text-align:center;opacity:.6">VISION app v1.7 · 2026-11-22</p>
   </div>
 </section>
 </main>
@@ -624,7 +625,7 @@ $('ps-run').onclick=e=>{const b=e.target.closest('button');if(!b||!admin||sheetI
 let HIST=null;
 function evText(e){const c=String(e.code||'');let m=c.match(/^P(\d+)_(MAN|AUTO|MSTART|MSTOP)$/);
   if(m)return t('e_'+m[2]).replace('{n}',m[1]);
-  if(e.ev==='CMD'&&I18N.ar['e_'+c])return t('e_'+c)+(c==='SET'&&e.text?' ('+e.text+')':'');
+  if(e.ev==='CMD'&&I18N.ar['e_'+c])return t('e_'+c)+(c==='SET'&&e.text?' ('+String(e.text).split(',').map(k=>I18N.ar['f_'+k]?t('f_'+k):k==='pSet'?t('l_pset'):k).join('، ')+')':'');
   return alarmText(e)}
 function renderHist(){
   if(!HIST){$('hist').innerHTML=`<div class="empty">${t('loading')}</div>`;return}
