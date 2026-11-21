@@ -1,5 +1,5 @@
 // minimal service worker: app shell offline, live data always from network (MQTT)
-const C = 'vision-v1';
+const C = 'vision-v2';
 self.addEventListener('install', e => e.waitUntil(caches.open(C).then(c => c.addAll(['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'])).then(() => self.skipWaiting())));
 self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
 self.addEventListener('fetch', e => {

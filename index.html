@@ -77,6 +77,17 @@ nav .badge{background:var(--bad);color:#fff;border-radius:99px;font-size:11px;pa
 .toast{position:fixed;bottom:80px;inset-inline:16px;max-width:480px;margin:auto;background:#0b2a4a;color:#fff;padding:12px 16px;border-radius:12px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9}
 .toast.show{opacity:1}
 .note{font-size:13px;color:var(--mut)}
+.dev{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.dev:last-child{border:0}.dev .nm{flex:1}.dev .nm b{display:block}.dev .nm small{color:var(--mut);font-size:12px}
+.dev.on .nm b{color:var(--water)}.dev button{min-height:40px;padding:0 12px}
+details.card summary{cursor:pointer;min-height:32px}
+.scan[hidden]{display:none!important}
+.scan{position:fixed;inset:0;z-index:20;background:rgba(3,10,20,.94);display:grid;place-content:center;gap:14px;color:#fff;text-align:center;padding:20px}
+.scanbox{position:relative;width:min(80vw,340px);aspect-ratio:1;border-radius:18px;overflow:hidden;background:#000}
+.scanbox video{width:100%;height:100%;object-fit:cover}
+.frame{position:absolute;inset:14%;border:3px solid var(--vfd);border-radius:14px;box-shadow:0 0 0 999px rgba(0,0,0,.35)}
+#devsel{font:inherit;font-size:13px;min-height:30px;background:transparent;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:8px;padding:0 6px;max-width:160px}
+#devsel option{color:#000}
 </style>
 </head>
 <body>
@@ -87,7 +98,7 @@ nav .badge{background:var(--bad);color:#fff;border-radius:99px;font-size:11px;pa
 </defs></svg>
 <header>
   <div class="logo">رؤية VISION<small>just push the button</small></div>
-  <div class="dev"><span class="dot" id="cdot"></span><span id="ctext">غير متصل</span><br><span id="devname" class="note" style="color:#bcd">—</span></div>
+  <div class="dev"><span class="dot" id="cdot"></span><span id="ctext">غير متصل</span><br><span id="devname" class="note" style="color:#bcd">—</span><select id="devsel" hidden aria-label="اختيار الجهاز"></select></div>
 </header>
 
 <main>
@@ -139,18 +150,32 @@ nav .badge{background:var(--bad);color:#fff;border-radius:99px;font-size:11px;pa
 
 <section class="view" id="v-conn">
   <div class="card">
-    <h2>الاتصال بالجهاز</h2>
+    <h2>أجهزتي</h2>
+    <div id="devlist"></div>
+    <div class="row"><button id="b-scan">＋ إضافة جهاز (مسح الباركود)</button><button class="sec" id="b-demo">وضع العرض</button></div>
+    <p class="note">امسح ملصق الباركود الموجود على باب البورد. يمكنك أيضاً مسحه بكاميرا الهاتف العادية فيفتح التطبيق ويُضاف الجهاز تلقائياً.</p>
+  </div>
+  <details class="card"><summary><b>إضافة يدوية (للفني)</b></summary>
+    <label class="f"><span>اسم الجهاز<small>يظهر للزبون</small></span><input id="c-name" placeholder="بوستر المجمع - البلوك A"></label>
     <label class="f"><span>عنوان السيرفر<small>wss://…:8084/mqtt</small></span><input id="c-url" dir="ltr" placeholder="wss://xxxx.emqxsl.com:8084/mqtt"></label>
-    <label class="f"><span>اسم المستخدم</span><input id="c-user" dir="ltr" autocomplete="username"></label>
-    <label class="f"><span>كلمة المرور</span><input id="c-pass" type="password" dir="ltr" autocomplete="current-password"></label>
+    <label class="f"><span>اسم المستخدم</span><input id="c-user" dir="ltr" autocomplete="off"></label>
+    <label class="f"><span>كلمة المرور</span><input id="c-pass" type="password" dir="ltr" autocomplete="off"></label>
     <label class="f"><span>رقم الجهاز<small>Device ID</small></span><input id="c-dev" dir="ltr" value="em300-01"></label>
+    <div class="row"><button id="b-add">حفظ الجهاز والاتصال</button></div>
+  </details>
+  <div class="card">
     <label class="f"><span>رمز الفني<small>يفتح إعدادات الفني</small></span><input id="c-pin" type="password" inputmode="numeric" dir="ltr"></label>
-    <div class="row"><button id="b-conn">اتصال</button><button class="sec" id="b-demo">وضع العرض (بدون جهاز)</button></div>
+    <div class="row"><button class="sec" id="b-pin">فتح إعدادات الفني</button></div>
     <p class="note" id="c-msg"></p>
   </div>
 </section>
 </main>
 
+<div class="scan" id="scan" hidden>
+  <div class="scanbox"><video id="scanv" playsinline muted></video><i class="frame"></i></div>
+  <p id="scanmsg">وجّه الكاميرا نحو باركود الجهاز</p>
+  <div class="row" style="justify-content:center"><button class="sec" id="b-scanx" style="background:#fff">إلغاء</button></div>
+</div>
 <nav>
   <button class="act" data-v="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M12 13l4-4"/></svg>الرئيسية</button>
   <button data-v="alarms"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 17V11a6 6 0 0112 0v6l2 2H4z"/><path d="M10 21h4"/></svg><span>الإنذارات<span class="badge" id="abadge" hidden>0</span></span></button>
@@ -240,7 +265,7 @@ function send(cmd,payload){
   if(!client||!client.connected){toast('غير متصل بالجهاز');return}
   client.publish(base()+'/cmd',JSON.stringify({cmd,payload}),{qos:1});
 }
-const base=()=>'vision/'+($('c-dev').value.trim()||'em300-01');
+const base=()=>'vision/'+((cur()&&cur().d)||'em300-01');
 $('b-en1').onclick=()=>{send('enable',true);toast('أُرسل أمر التشغيل')};
 $('b-en0').onclick=()=>{send('enable',false);toast('أُرسل أمر الإيقاف')};
 $('b-reset').onclick=()=>{send('reset',true);toast('أُرسل Reset')};
@@ -257,26 +282,77 @@ $('b-save').onclick=()=>{
 
 /* ---------- MQTT ---------- */
 function loadMqtt(){return new Promise((ok,no)=>{if(window.mqtt)return ok();const s=document.createElement('script');s.src='https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js';s.onload=ok;s.onerror=()=>no(new Error('lib'));document.head.appendChild(s)})}
+/* ---------- devices (Tuya-style: add by QR) ---------- */
+let devices=[];try{devices=JSON.parse(store.get('devices')||'[]')}catch(e){devices=[]}
+let activeId=store.get('active')||'';
+const cur=()=>devices.find(d=>d.d===activeId)||devices[0];
+function saveDevs(){store.set('devices',JSON.stringify(devices));store.set('active',activeId)}
+const b64e=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+const b64d=t=>JSON.parse(decodeURIComponent(escape(atob(t.replace(/-/g,'+').replace(/_/g,'/')))));
+function parseCode(txt){
+  txt=String(txt||'').trim();let m=txt.match(/#add=([A-Za-z0-9_-]+)/)||txt.match(/^VISION:([A-Za-z0-9_-]+)$/);
+  if(!m)return null;try{const o=b64d(m[1]);if(o&&o.u&&o.d)return o}catch(e){}return null}
+function addDevice(o,quiet){
+  const dev={n:o.n||o.d,u:o.u,d:o.d,a:o.a||'',p:o.p||''};
+  const i=devices.findIndex(x=>x.d===dev.d);if(i>=0)devices[i]=dev;else devices.push(dev);
+  activeId=dev.d;saveDevs();renderDevs();if(!quiet)toast('أُضيف الجهاز: '+dev.n);connect();
+}
+function renderDevs(){
+  $('devlist').innerHTML=devices.length?devices.map(d=>`<div class="dev ${d.d===activeId?'on':''}"><div class="nm"><b>${esc(d.n)}</b><small dir="ltr">${esc(d.d)}</small></div><button class="sec" data-use="${esc(d.d)}">${d.d===activeId?'مفتوح':'فتح'}</button><button class="sec" data-del="${esc(d.d)}" aria-label="حذف">✕</button></div>`).join(''):'<div class="empty">لا توجد أجهزة بعد. اضغط "إضافة جهاز".</div>';
+  const sel=$('devsel');sel.hidden=devices.length<2;
+  sel.innerHTML=devices.map(d=>`<option value="${esc(d.d)}" ${d.d===activeId?'selected':''}>${esc(d.n)}</option>`).join('');
+  $('devname').hidden=devices.length>=2;
+}
+function esc(t){return String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+$('devlist').onclick=e=>{const u=e.target.dataset.use,d=e.target.dataset.del;
+  if(u){activeId=u;saveDevs();renderDevs();connect()}
+  if(d){if(d===$('devlist').dataset.confirm){devices=devices.filter(x=>x.d!==d);if(activeId===d)activeId=(devices[0]||{}).d||'';saveDevs();renderDevs();$('devlist').dataset.confirm='';toast('حُذف الجهاز');if(devices.length)connect();else startDemo()}
+        else{$('devlist').dataset.confirm=d;toast('اضغط ✕ مرة ثانية لتأكيد الحذف')}}};
+$('devsel').onchange=e=>{activeId=e.target.value;saveDevs();renderDevs();connect()};
+$('b-add').onclick=()=>{const o={n:$('c-name').value.trim(),u:$('c-url').value.trim(),d:$('c-dev').value.trim(),a:$('c-user').value.trim(),p:$('c-pass').value};
+  if(!o.u||!o.d){$('c-msg').textContent='اكتب عنوان السيرفر ورقم الجهاز.';return}addDevice(o)};
+let pinOk=false;
+$('b-pin').onclick=()=>{pinOk=admin=$('c-pin').value===ADMIN_PIN;toast(admin?'فُتحت إعدادات الفني':'رمز غير صحيح');draft=null;if(S)fillSettings(S.settings||{})};
+
+/* ---------- QR scanner ---------- */
+let scanStream=null,scanLoop=null;
+function loadScript(src){return new Promise((ok,no)=>{const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=no;document.head.appendChild(s)})}
+async function startScan(){
+  $('scan').hidden=false;$('scanmsg').textContent='وجّه الكاميرا نحو باركود الجهاز';
+  try{scanStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false})}
+  catch(e){$('scanmsg').textContent='لا يمكن فتح الكاميرا. اسمح للتطبيق باستخدام الكاميرا، أو امسح الباركود بكاميرا الهاتف.';return}
+  const v=$('scanv');v.srcObject=scanStream;await v.play().catch(()=>{});
+  let det=null;if('BarcodeDetector' in window){try{det=new BarcodeDetector({formats:['qr_code']})}catch(e){}}
+  if(!det&&!window.jsQR){try{await loadScript('https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js')}catch(e){}}
+  const c=document.createElement('canvas'),x=c.getContext('2d',{willReadFrequently:true});
+  const tick=async()=>{if(!scanStream)return;let txt=null;
+    try{if(det){const r=await det.detect(v);if(r[0])txt=r[0].rawValue}
+        else if(window.jsQR&&v.videoWidth){c.width=v.videoWidth;c.height=v.videoHeight;x.drawImage(v,0,0);const r=jsQR(x.getImageData(0,0,c.width,c.height).data,c.width,c.height);if(r)txt=r.data}}catch(e){}
+    if(txt){const o=parseCode(txt);if(o){stopScan();addDevice(o);return}$('scanmsg').textContent='هذا الباركود ليس لجهاز VISION'}
+    scanLoop=setTimeout(tick,250)};
+  tick();
+}
+function stopScan(){clearTimeout(scanLoop);if(scanStream){scanStream.getTracks().forEach(t=>t.stop());scanStream=null}$('scan').hidden=true}
+$('b-scan').onclick=startScan;$('b-scanx').onclick=stopScan;
+
 async function connect(){
-  stopDemo();
-  const url=$('c-url').value.trim();if(!url){$('c-msg').textContent='اكتب عنوان السيرفر أولاً.';return}
-  ['url','user','dev'].forEach(k=>store.set(k,$('c-'+k).value.trim()));
-  admin=$('c-pin').value===ADMIN_PIN;
-  setConn('','جارٍ الاتصال…');$('c-msg').textContent='';
+  stopDemo();admin=pinOk;const dv=cur();
+  if(!dv){startDemo();return}
+  setConn('','جارٍ الاتصال…');$('c-msg').textContent='';$('devname').textContent=dv.n;
   try{await loadMqtt()}catch(e){setConn('bad','فشل');$('c-msg').textContent='تعذّر تحميل مكتبة الاتصال. تأكد من الإنترنت.';return}
   if(client)try{client.end(true)}catch(e){}
-  try{client=mqtt.connect(url,{username:$('c-user').value.trim(),password:$('c-pass').value,reconnectPeriod:4000,connectTimeout:10000,clientId:'app_'+Math.random().toString(16).slice(2,10)})}
+  S=null;draft=null;
+  try{client=mqtt.connect(dv.u,{username:dv.a,password:dv.p,reconnectPeriod:4000,connectTimeout:10000,clientId:'app_'+Math.random().toString(16).slice(2,10)})}
   catch(e){setConn('bad','خطأ');$('c-msg').textContent='عنوان غير صالح.';return}
-  mode='mqtt';$('devname').textContent=$('c-dev').value.trim();
-  client.on('connect',()=>{setConn('ok','متصل');client.subscribe([base()+'/status',base()+'/alarm'],{qos:1});ping();clearInterval(liveTimer);liveTimer=setInterval(ping,60000);toast('تم الاتصال')});
+  mode='mqtt';
+  client.on('connect',()=>{setConn('ok','متصل');client.subscribe([base()+'/status',base()+'/alarm'],{qos:1});ping();clearInterval(liveTimer);liveTimer=setInterval(ping,60000)});
   client.on('reconnect',()=>setConn('','إعادة الاتصال…'));
   client.on('error',e=>{setConn('bad','خطأ');$('c-msg').textContent='خطأ: '+(e&&e.message||e)});
-  client.on('message',(t,m)=>{let d;try{d=JSON.parse(m.toString())}catch(e){return}
+  client.on('message',(t,m)=>{if(!t.startsWith(base()+'/'))return;let d;try{d=JSON.parse(m.toString())}catch(e){return}
     if(t.endsWith('/status'))render(d);else if(t.endsWith('/alarm')&&Array.isArray(d))d.forEach(a=>toast('⚠ '+a.text))});
 }
 function ping(){if(client&&client.connected&&!document.hidden)client.publish(base()+'/cmd',JSON.stringify({cmd:'live'}))}
 document.addEventListener('visibilitychange',ping);
-$('b-conn').onclick=()=>connect();
 
 /* ---------- demo mode (same logic as the device simulation, simplified) ---------- */
 let D;
@@ -316,8 +392,12 @@ document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('act',x===b));
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('act',v.id==='v-'+b.dataset.v));window.scrollTo(0,0)});
 
-['url','user','dev'].forEach(k=>{const v=store.get(k);if(v)$('c-'+k).value=v});
-if(store.get('url'))connect();else startDemo();
+(function init(){
+  const o=parseCode(location.hash);
+  if(o){history.replaceState(null,'',location.pathname);addDevice(o);document.querySelector('nav button[data-v=home]').click();return}
+  renderDevs();if(devices.length)connect();else startDemo();
+})();
+window.addEventListener('hashchange',()=>{const o=parseCode(location.hash);if(o){history.replaceState(null,'',location.pathname);addDevice(o)}});
 if('serviceWorker' in navigator&&location.protocol==='https:'){try{navigator.serviceWorker.register('sw.js')}catch(e){}}
 }
 </script>
