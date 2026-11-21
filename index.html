@@ -446,7 +446,7 @@ document.addEventListener('input',e=>{if(e.target.closest('#v-settings'))draft=t
 function send(cmd,payload){
   if(mode==='demo'){demoCmd(cmd,payload);return}
   if(!client||!client.connected){toast(t('t_noconn'));return}
-  client.publish(base()+'/cmd',JSON.stringify({cmd,payload}),{qos:1});
+  client.publish(base()+(admin?'/cmd/t':'/cmd'),JSON.stringify({cmd,payload}),{qos:1});
 }
 const base=()=>'vision/'+((cur()&&cur().d)||'em300-01');
 $('b-en1').onclick=()=>{send('enable',true);toast(t('t_en1'))};
