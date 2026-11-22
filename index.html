@@ -116,6 +116,7 @@ nav{grid-template-columns:repeat(5,minmax(0,1fr))}nav button{font-size:12px}
 #chart text{font-size:11px;fill:var(--mut)}#chart{direction:ltr}
 .legend{display:flex;flex-wrap:wrap;gap:12px;font-size:13px;color:var(--mut);margin-top:6px}.legend i{display:inline-block;width:14px;height:3px;border-radius:2px;vertical-align:middle;margin-inline-end:5px}
 .readout{font-size:13px;min-height:20px;color:var(--ink);text-align:center;margin-top:4px}
+.vreg{width:100%;border-collapse:collapse;font-size:13px}.vreg th,.vreg td{padding:4px;border-bottom:1px solid var(--line);text-align:start;vertical-align:middle}.vreg input,.vreg select{min-height:36px;font-size:14px;padding:0 6px;min-width:64px}
 </style>
 </head>
 <body>
@@ -152,6 +153,11 @@ nav{grid-template-columns:repeat(5,minmax(0,1fr))}nav button{font-size:12px}
     <div class="pumps" id="pumps"></div>
     <p class="note" style="margin:10px 0 0"><span style="color:var(--vfd)">●</span> <span data-t="leg_vfd">على الانفيرتر</span> &nbsp; <span style="color:var(--dol)">●</span> <span data-t="leg_dol">مباشر</span> &nbsp; <span style="color:var(--bad)">●</span> <span data-t="leg_fault">عطل</span></p>
   </div>
+  <div class="card" id="vfd-home" hidden>
+    <h2 data-t="h_vfdhome">الانفيرتر</h2>
+    <div class="kpis" id="vfd-kpis"></div>
+    <div class="chips" id="vfd-hchips" style="margin-top:10px"></div>
+  </div>
   <div class="card">
     <h2 data-t="h_remote">التشغيل عن بعد</h2>
     <div class="row"><button id="b-en1" data-t="b_en1">تشغيل النظام</button><button class="sec" id="b-en0" data-t="b_en0">إيقاف النظام</button></div>
@@ -180,6 +186,21 @@ nav{grid-template-columns:repeat(5,minmax(0,1fr))}nav button{font-size:12px}
   </div>
 </section>
 
+<section class="view" id="v-vfd">
+  <div class="row" style="margin:0 0 10px"><button class="sec" id="b-vfdback">‹ <span data-t="nav_set">الإعدادات</span></button></div>
+  <div class="card">
+    <h2 data-t="h_vfdlive">قراءات الانفيرتر</h2>
+    <div class="chips" id="vl-chips" style="justify-content:flex-start;margin:0 0 10px"></div>
+    <div class="info" id="vl-info"></div>
+    <p class="note" id="vl-note"></p>
+  </div>
+  <div class="card">
+    <h2 data-t="h_vfdcfg">إعدادات الربط</h2>
+    <p class="lock" id="vlock" data-t="lockmsg">مقفلة.</p>
+    <div id="vcfg"></div>
+  </div>
+</section>
+
 <section class="view" id="v-settings">
   <div class="card">
     <h2 data-t="h_cust">إعدادات الزبون</h2>
@@ -197,6 +218,7 @@ nav{grid-template-columns:repeat(5,minmax(0,1fr))}nav button{font-size:12px}
     <div id="adv"></div>
   </div>
   <div class="row"><button id="b-save" data-t="b_save">حفظ وإرسال للجهاز</button><button class="sec" id="b-undo" data-t="b_undo">تراجع</button></div>
+  <div class="card" style="margin-top:14px"><div class="row" style="margin:0;align-items:center"><div style="flex:1"><b data-t="h_vfdlink">ربط الانفيرتر (Modbus)</b><div class="note" id="vfd-sum">—</div></div><button class="sec" id="b-vfdpage" data-t="b_open">فتح</button></div></div>
 </section>
 
 <section class="view" id="v-conn">
@@ -218,7 +240,7 @@ nav{grid-template-columns:repeat(5,minmax(0,1fr))}nav button{font-size:12px}
     <label class="f"><span><span data-t="l_pin">رمز الفني</span><small data-t="l_pin_s">يفتح إعدادات الفني</small></span><input id="c-pin" type="password" inputmode="numeric" dir="ltr"></label>
     <div class="row"><button class="sec" id="b-pin" data-t="b_pin">فتح إعدادات الفني</button></div>
     <p class="note" id="c-msg"></p>
-    <p class="note" dir="ltr" style="text-align:center;opacity:.6">VISION app v1.13 · 2026-11-22</p>
+    <p class="note" dir="ltr" style="text-align:center;opacity:.6">VISION app v1.14 · 2026-11-22</p>
   </div>
 </section>
 </main>
@@ -293,7 +315,16 @@ ps_mode:'طريقة التشغيل',m_auto:'آلي',m_man:'يدوي',m_start:'ت
 i_last:'آخر تشغيل',i_mode:'الطريقة',i_fbv:'كونتاكتور VFD',i_fbd:'كونتاكتور DOL',i_fault:'العطل',i_none:'لا يوجد',i_cmdfb:'أمر / رجوع',
 n_man:'اليدوي يشغّل المضخة مباشرة (DOL) ويخرجها من التسلسل الآلي. تبقى الحمايات فعّالة: الماء، الضغط العالي، العطل، الإيقاف عن بعد.',
 n_manblk:'⚠ التشغيل اليدوي ممنوع الآن (النظام موقوف عن بعد أو ماء منخفض أو ضغط عالٍ).',n_lockp:'التحكم اليدوي يحتاج رمز الفني.',n_dis:'المضخة خارج الخدمة. فعّلها من الإعدادات أولاً.',
-t_cmd:'أُرسل الأمر',t_man:'المضخة على يدوي'},
+t_cmd:'أُرسل الأمر',t_man:'المضخة على يدوي',
+h_vfdlink:'ربط الانفيرتر (Modbus)',b_open:'فتح',h_vfdlive:'قراءات الانفيرتر',h_vfdcfg:'إعدادات الربط',h_vfdhome:'الانفيرتر (قراءة فعلية)',
+v_en:'تفعيل القراءة عبر Modbus',v_type:'نوع الانفيرتر',v_addr:'عنوان الانفيرتر (Slave ID)',v_kwnom:'قدرة المحرك الاسمية',v_comm:'منفذ الاتصال',
+v_regs:'العناوين (تتغير تلقائياً حسب النوع، ويمكن تعديلها)',v_reg:'العنوان',v_fc:'الوظيفة',v_dt:'النوع',v_k:'المعامل',v_runbit:'بت التشغيل',v_fltbit:'بت العطل',
+p_freq:'التردد',p_cur:'التيار',p_kw:'القدرة kW',p_kwp:'القدرة %',p_st:'كلمة الحالة',p_flt:'رمز العطل',
+v_hint:'اضبط في الانفيرتر:',v_save:'حفظ إعدادات الانفيرتر',v_reset:'إرجاع العناوين الافتراضية للنوع',v_saved:'أُرسلت إعدادات الانفيرتر',
+vc_OFF:'القراءة متوقفة',vc_WAIT:'جارٍ التعرّف…',vc_OK:'متصل ✓',vc_NOREPLY:'لا يوجد رد',vs_run:'يعمل',vs_stop:'متوقف',vs_fault:'عطل',
+v_ok:'ردود',v_err:'أخطاء',v_last:'آخر خطأ',v_fcode:'رمز العطل',v_off_n:'فعّل القراءة واختر النوع ثم احفظ.',v_nr_n:'تأكد من: توصيل A/B، العنوان، السرعة 9600 و 8N1 في الانفيرتر، وتفعيل Modbus RTU فيه.',
+v_exc:'الانفيرتر يرد لكن بعض العناوين غير مدعومة (EXC). راجع العناوين.',v_custom:'مخصص (أدخل العناوين يدوياً)',v_note_abb:'قيم ABB تعتمد على مقاييس 46.02 / 46.04 / 46.05. قارن القراءة مع شاشة الانفيرتر وعدّل المعامل إن لزم.',
+v_none:'—'},
 en:{title:'VISION',gauge:'Pressure gauge',askt:'Device code',scanmsg:'Point the camera at the device QR code',
 offline:'Offline',setpoint:'Setpoint',k_hz:'VFD frequency Hz',k_run:'Pumps running',k_state:'System state',h_pumps:'Pumps',
 leg_vfd:'On VFD',leg_dol:'Direct (DOL)',leg_fault:'Fault',h_remote:'Remote operation',b_en1:'Start system',b_en0:'Stop system',
@@ -328,7 +359,16 @@ ps_mode:'Operating mode',m_auto:'Auto',m_man:'Manual',m_start:'Start',m_stop:'St
 i_last:'Last start',i_mode:'Mode',i_fbv:'VFD contactor',i_fbd:'DOL contactor',i_fault:'Fault',i_none:'None',i_cmdfb:'cmd / feedback',
 n_man:'Manual runs the pump direct-on-line (DOL) and removes it from the automatic sequence. Protections stay active: water, high pressure, fault, remote stop.',
 n_manblk:'⚠ Manual run is blocked now (system stopped remotely, low water or high pressure).',n_lockp:'Manual control needs the technician code.',n_dis:'Pump is out of service. Enable it in Settings first.',
-t_cmd:'Command sent',t_man:'Pump is on manual'}};
+t_cmd:'Command sent',t_man:'Pump is on manual',
+h_vfdlink:'VFD link (Modbus)',b_open:'Open',h_vfdlive:'VFD readings',h_vfdcfg:'Link settings',h_vfdhome:'VFD (actual)',
+v_en:'Enable Modbus reading',v_type:'VFD type',v_addr:'VFD address (Slave ID)',v_kwnom:'Motor rated power',v_comm:'Comm port',
+v_regs:'Registers (set by type, editable)',v_reg:'Address',v_fc:'Function',v_dt:'Type',v_k:'Scale',v_runbit:'Run bit',v_fltbit:'Fault bit',
+p_freq:'Frequency',p_cur:'Current',p_kw:'Power kW',p_kwp:'Power %',p_st:'Status word',p_flt:'Fault code',
+v_hint:'Set on the drive:',v_save:'Save VFD settings',v_reset:'Reset registers to type defaults',v_saved:'VFD settings sent',
+vc_OFF:'Reading off',vc_WAIT:'Detecting…',vc_OK:'Connected ✓',vc_NOREPLY:'No reply',vs_run:'Running',vs_stop:'Stopped',vs_fault:'Fault',
+v_ok:'Replies',v_err:'Errors',v_last:'Last error',v_fcode:'Fault code',v_off_n:'Enable reading, choose the type, then save.',v_nr_n:'Check: A/B wiring, address, 9600 and 8N1 on the drive, Modbus RTU enabled on the drive.',
+v_exc:'The drive answers but some registers are not supported (EXC). Check the registers.',v_custom:'Custom (enter registers manually)',v_note_abb:'ABB values depend on scaling parameters 46.02 / 46.04 / 46.05. Compare with the drive display and adjust the scale if needed.',
+v_none:'—'}};
 let LANG=store.get('lang')||'ar';if(!I18N[LANG])LANG='ar';
 const t=k=>(I18N[LANG][k]??I18N.ar[k]??k);
 function alarmText(a){const c=String(a.code||'');let m=c.match(/^P(\d+)_(FAIL|TRIP|STUCK)_(VFD|DOL)$/);
@@ -414,7 +454,7 @@ function setRate(p,target){p.target=reduceMotion?0:target}
 function renderPumps(s){
   if(pumpEls.length!==s.pumps.length)buildPumps(s.pumps.length);
   s.pumps.forEach((p,i)=>{const P=pumpEls[i];if(!P)return;
-    const hz=p.state==='VFD'?(s.hz||0):(p.state==='DOL'?50:(p.state==='START'?10:0));
+    const hz=p.state==='VFD'?((s.vfd&&s.vfd.comm==='OK'&&s.vfd.freq!=null)?s.vfd.freq:(s.hz||0)):(p.state==='DOL'?50:(p.state==='START'?10:0));
     const cls='pump '+p.state+(p.enabled?'':' dis');if(P.el.className!==cls)P.el.className=cls;
     P.el.querySelector('.pill').textContent=p.enabled?t('st_'+p.state):t('excluded');
     P.el.querySelector('.hz').textContent=hz&&p.state!=='START'?hz.toFixed(1)+' Hz':'—';
@@ -435,6 +475,7 @@ function render(s){
   const chip=(on,t,bad)=>`<span class="chip ${on?(bad?'bad':'on'):''}">${t}</span>`;
   $('chips').innerHTML=chip(s.remote,t('c_remote'))+chip(!s.waterOk,t('c_water'),1)+chip(s.vfdFault,t('c_vfd'),1)+(s.sim?chip(1,t('c_sim')):'')+(set.noWater?chip(1,t('c_nowater'),1):'');
   renderPumps(s);if(!$('psheet').hidden)renderSheet();
+  renderVfdLive();if($('v-vfd').classList.contains('act')&&!vdraft&&admin&&!$('vcfg').innerHTML)renderVfdCfg();
   const al=s.alarms||[];
   $('abadge').hidden=!al.length;$('abadge').textContent=al.length;
   $('alarms').innerHTML=al.length?al.map(a=>`<div class="alarm ${a.active?'':'cleared'}"><i></i><div>${esc(alarmText(a))}<small>${new Date(a.t).toLocaleString(LANG==='ar'?'ar-IQ':'en-GB')}${a.active?'':t('cleared')}</small></div></div>`).join(''):`<div class="empty">${t('noalarms')}</div>`;
@@ -569,7 +610,7 @@ function startDemo(){
   if(client)try{client.end(true)}catch(e){} client=null;
   mode='demo';admin=true;setConn('demo','cn_demo');$('devname').textContent=t('demo_name');
   D={P:3.2,spd:80,run:true,vfd:1,dol:[0],demand:2,hours:[12.4,11.9,8.2,7.5,3.1,2.8],
-     set:{pSet:4,pRange:10,pHigh:8,pLow:1.5,spdMin:60,kp:8,ti:3,tUp:10,tDown:10,tSleep:30,stopBand:0.3,wakeBand:0.3,tFb:3,tChange:0.5,tLow:60,sim:true,nPumps:6,boostEn:false,boostLowHz:32,boostDelay:60,boostHz:45,boostTime:10,sigType:'4-20',pMin:0,noWater:false,enabled:[true,true,true,true,true,true]},
+     set:{pSet:4,pRange:10,pHigh:8,pLow:1.5,spdMin:60,kp:8,ti:3,tUp:10,tDown:10,tSleep:30,stopBand:0.3,wakeBand:0.3,tFb:3,tChange:0.5,tLow:60,sim:true,nPumps:6,boostEn:false,boostLowHz:32,boostDelay:60,boostHz:45,boostTime:10,sigType:'4-20',pMin:0,noWater:false,vfd:{en:true,type:'delta',addr:1,kwNom:15,pts:{}},enabled:[true,true,true,true,true,true]},
      alarms:[{code:'P6_TRIP_DOL',text:'مضخة 6: سقط الكونتاكتور DOL أثناء التشغيل (أوفرلود أو فصل)',t:Date.now()-3600e3,active:false}],fault:5,remote:true,t:0,
      mode:['AUTO','AUTO','AUTO','AUTO','AUTO','AUTO'],man:[0,0,0,0,0,0],starts:[412,398,305,290,121,117],lastOn:[0,0,0,0,0,0].map((_,i)=>Date.now()-(i+1)*5400e3)};
   const now=Date.now(),H=[];
@@ -596,6 +637,7 @@ function demoStep(){
   const cap=D.dol.length+(D.run?(D.spd/100)**2:0);D.P+=((Math.min(Math.max(5+2.5*(cap-D.demand),0),9.5))-D.P)/3;
   [...D.dol,D.vfd].forEach(i=>{if(i>=0)D.hours[i]+=1/3600});
   render({P:D.P,pSet:s.pSet,spd:D.spd,hz:D.spd/2,run:D.run,seq:D.run?'RUN':'IDLE',runOk:D.remote,remote:D.remote,waterOk:true,vfdFault:false,sim:true,settings:s,
+    vfd:{comm:'OK',run:D.run,fault:false,freq:D.run?+(D.spd/2).toFixed(1):0,cur:D.run?+(4+22*(D.spd/100)**3).toFixed(1):0,kw:D.run?+(11*(D.spd/100)**3).toFixed(2):0,flt:0,ok:D.t*5,err:0,lastErr:''},
     manOk:D.remote,pumps:D.hours.slice(0,s.nPumps||6).map((h,i)=>{const man=D.mode[i]==='MAN'&&D.man[i]&&D.remote&&i!==D.fault&&s.enabled[i];
       const st=i===D.fault?'FAULT':i===D.vfd?'VFD':(D.dol.includes(i)||man)?'DOL':'OFF';
       return {n:i+1,enabled:s.enabled[i],state:st,fault:i===D.fault?'TRIP-DOL':null,hours:h,starts:D.starts[i],lastOn:D.lastOn[i],mode:D.mode[i],man:!!D.man[i],
@@ -615,6 +657,75 @@ function demoCmd(cmd,p){
 $('b-demo').onclick=()=>startDemo();
 
 
+
+/* ---------- VFD Modbus link ---------- */
+const VFD_TYPES=[['abb580','ABB ACS580 / ACQ580 / ACH580'],['atv600','Schneider ATV600 / ATV900'],['atv320','Schneider ATV320 / ATV340'],['delta','Delta C2000 / CP2000 / MS300'],['danfoss','Danfoss FC102 / FC202'],['invt','INVT GD200A / GD20'],['custom','*']];
+const VFD_PROF={abb580:{st:{r:3,fc:3,t:'u16'},freq:{r:105,fc:3,t:'s16',k:0.0025},cur:{r:106,fc:3,t:'u16',k:1},kw:{r:113,fc:3,t:'s16',k:0.1}},
+ atv600:{st:{r:3201,fc:3,t:'u16'},freq:{r:3202,fc:3,t:'s16',k:0.1},cur:{r:3204,fc:3,t:'u16',k:0.1},kw:{r:3293,fc:3,t:'u16',k:0.1},flt:{r:7121,fc:3,t:'u16'}},
+ atv320:{st:{r:3201,fc:3,t:'u16'},freq:{r:3202,fc:3,t:'s16',k:0.1},cur:{r:3204,fc:3,t:'u16',k:0.1},kwp:{r:3211,fc:3,t:'s16',k:1},flt:{r:7121,fc:3,t:'u16'}},
+ delta:{flt:{r:0x2100,fc:3,t:'u16'},st:{r:0x2101,fc:3,t:'u16'},freq:{r:0x2103,fc:3,t:'u16',k:0.01},cur:{r:0x2104,fc:3,t:'u16',k:0.01}},
+ danfoss:{st:{r:16029,fc:3,t:'u16'},kw:{r:16099,fc:3,t:'s32',k:0.01},freq:{r:16129,fc:3,t:'u16',k:0.1},cur:{r:16139,fc:3,t:'s32',k:0.01},flt:{r:16899,fc:3,t:'u32'}},
+ invt:{st:{r:0x2100,fc:3,t:'u16'},flt:{r:0x2102,fc:3,t:'u16'},freq:{r:0x3000,fc:3,t:'u16',k:0.01},cur:{r:0x3004,fc:3,t:'u16',k:0.1},kwp:{r:0x3006,fc:3,t:'s16',k:0.1}},custom:{}};
+const VFD_HINT={abb580:'58.01 = Modbus RTU · 58.03 = Slave ID · 58.04 = 9600 · 58.05 = 8 NONE 1 · 58.25 = ABB Drives',
+ atv600:'Communication › Modbus: Address = Slave ID · Baud = 9600 · Format = 8N1',atv320:'COM- › Modbus: Add = Slave ID · tbr = 9600 · tFO = 8n1',
+ delta:'09-00 = Slave ID · 09-01 = 9.6 · 09-04 = 8,N,1 (RTU)',danfoss:'8-30 = Modbus RTU · 8-31 = Slave ID · 8-32 = 9600 · 8-33 = No parity, 1 stop bit',
+ invt:'P14.00 = Slave ID · P14.01 = 9600 · P14.02 = 8N1 (RTU)',custom:''};
+const VPTS=['freq','cur','kw','kwp','st','flt'],HEXT=['delta','invt'];
+let vdraft=false,vType=null;
+$('b-vfdpage').onclick=()=>{document.querySelectorAll('.view').forEach(v=>v.classList.toggle('act',v.id==='v-vfd'));window.scrollTo(0,0);vdraft=false;vType=null;renderVfdCfg();renderVfdLive()};
+$('b-vfdback').onclick=()=>document.querySelector('nav button[data-v=settings]').click();
+function vcfg(){return (S&&S.settings&&S.settings.vfd)||{}}
+function renderVfdCfg(){
+  $('vlock').hidden=admin;if(!admin){$('vcfg').innerHTML='';return}
+  const c=vcfg(),type=vType||c.type||'delta',prof=VFD_PROF[type]||{},own=(vType&&vType!==c.type)?{}:(c.pts||{});
+  const pt=k=>Object.assign({},prof[k]||{},own[k]||{});
+  const row=k=>{const p=pt(k);return `<tr data-p="${k}"><td>${t('p_'+k)}</td><td><input dir="ltr" data-f="r" value="${p.r==null?'':(HEXT.includes(type)?'0x'+p.r.toString(16).toUpperCase():p.r)}" placeholder="—"></td>
+   <td><select data-f="fc" dir="ltr"><option ${p.fc!=4?'selected':''}>3</option><option ${p.fc==4?'selected':''}>4</option></select></td>
+   <td><select data-f="t" dir="ltr">${['u16','s16','u32','s32'].map(x=>`<option ${(p.t||'u16')===x?'selected':''}>${x}</option>`).join('')}</select></td>
+   <td>${k==='st'?`<input dir="ltr" data-f="runBit" value="${p.runBit??''}" placeholder="${t('v_runbit')}" style="margin-bottom:4px"><input dir="ltr" data-f="fltBit" value="${p.fltBit??''}" placeholder="${t('v_fltbit')}">`:k==='flt'?'':`<input dir="ltr" data-f="k" value="${p.k??''}" inputmode="decimal">`}</td></tr>`};
+  $('vcfg').innerHTML=`<label class="f"><span>${t('v_en')}</span><input type="checkbox" id="vc-en" ${c.en?'checked':''}></label>
+   <label style="display:block;padding:8px 0;border-bottom:1px solid var(--line)"><span>${t('v_type')}</span><select id="vc-type" style="margin-top:6px">${VFD_TYPES.map(([v,n])=>`<option value="${v}" ${v===type?'selected':''}>${v==='custom'?t('v_custom'):n}</option>`).join('')}</select></label>
+   <label class="f"><span>${t('v_addr')}<small>1 - 247</small></span><input type="number" id="vc-addr" min="1" max="247" value="${c.addr||1}"></label>
+   <label class="f"><span>${t('v_kwnom')}<small>kW</small></span><input type="number" step="any" id="vc-kw" value="${c.kwNom||''}"></label>
+   <p class="note" style="margin:10px 0 0">${t('v_comm')}: <b dir="ltr" style="white-space:nowrap">RS485-1 · 9600 · 8N1 · RTU</b></p>
+   ${VFD_HINT[type]?`<p class="note"><b>${t('v_hint')}</b> <span dir="ltr">${VFD_HINT[type]}</span></p>`:''}
+   ${type==='abb580'?`<p class="note">⚠ ${t('v_note_abb')}</p>`:''}
+   <details style="margin-top:8px"${type==='custom'?' open':''}><summary class="note">${t('v_regs')}</summary>
+   <div style="overflow-x:auto"><table class="vreg"><thead><tr><th></th><th>${t('v_reg')}</th><th>FC</th><th>${t('v_dt')}</th><th>${t('v_k')}</th></tr></thead><tbody>${VPTS.map(row).join('')}</tbody></table></div>
+   <div class="row"><button class="sec" id="vc-def">${t('v_reset')}</button></div></details>
+   <div class="row"><button id="vc-save">${t('v_save')}</button></div>`;
+  $('vc-type').onchange=e=>{vType=e.target.value;vdraft=true;renderVfdCfg()};
+  $('vc-def').onclick=()=>{vType=$('vc-type').value;if(!S||!S.settings){renderVfdCfg();return}const keep=S.settings.vfd;S.settings.vfd=Object.assign({},keep,{pts:{}});renderVfdCfg();S.settings.vfd=keep;vdraft=true};
+  $('vc-save').onclick=saveVfd;
+}
+$('vcfg').addEventListener('input',()=>vdraft=true);
+function saveVfd(){
+  const type=$('vc-type').value,prof=VFD_PROF[type]||{},pts={};
+  document.querySelectorAll('#vcfg tr[data-p]').forEach(tr=>{const k=tr.dataset.p,o={};
+    tr.querySelectorAll('[data-f]').forEach(i=>{const v=i.value.trim();if(v==='')return;o[i.dataset.f]=i.dataset.f==='t'?v:(i.dataset.f==='r'&&/^0x/i.test(v)?parseInt(v,16):(i.dataset.f==='runBit'||i.dataset.f==='fltBit'||i.dataset.f==='r')?parseInt(v):+v)});
+    const d=prof[k]||{};const diff=Object.keys(o).some(f=>o[f]!==d[f]&&!(f==='k'&&d[f]===undefined&&o[f]===1));
+    if(type==='custom'||diff||(!prof[k]&&o.r!==undefined))pts[k]=o});
+  const v={en:$('vc-en').checked,type,addr:parseInt($('vc-addr').value)||1,kwNom:parseFloat($('vc-kw').value)||0,pts};
+  send('settings',{vfd:v});vdraft=false;vType=null;toast(t('v_saved'));
+}
+function vfdState(x){return !x?'':x.fault?t('vs_fault'):x.run?t('vs_run'):x.run===false?t('vs_stop'):'—'}
+function fmt(v,d,u){return v==null||isNaN(v)?'—':(+v).toFixed(d)+(u?' '+u:'')}
+function renderVfdLive(){
+  const x=S&&S.vfd,c=vcfg(),comm=x?x.comm:'OFF';
+  const chip=(on,txt,bad)=>`<span class="chip ${on?(bad?'bad':'on'):''}">${txt}</span>`;
+  $('vl-chips').innerHTML=chip(comm==='OK',t('vc_'+comm),comm==='NOREPLY')+(x&&comm==='OK'?chip(!!x.run||!!x.fault,vfdState(x),!!x.fault):'');
+  const kw=x?(x.kw??x.kwCalc):null;
+  const cell=(k,v)=>`<div><small>${k}</small><b dir="ltr">${v}</b></div>`;
+  $('vl-info').innerHTML=x&&comm!=='OFF'?cell(t('p_freq'),fmt(x.freq,1,'Hz'))+cell(t('p_cur'),fmt(x.cur,1,'A'))+cell(t('p_kw'),fmt(kw,2,'kW'))+cell(t('v_fcode'),x.flt?x.flt:'0')+
+    cell(t('v_ok')+' / '+t('v_err'),(x.ok||0)+' / '+(x.err||0))+cell(t('v_last'),x.lastErr||'—'):'';
+  $('vl-note').textContent=comm==='OFF'?t('v_off_n'):comm==='NOREPLY'?t('v_nr_n'):(x&&/EXC/.test(x.lastErr||'')?t('v_exc'):'');
+  const nm=(VFD_TYPES.find(v=>v[0]===c.type)||[0,''])[1];
+  $('vfd-sum').textContent=c.en?(c.type==='custom'?t('v_custom'):nm)+' · #'+(c.addr||1)+' · '+t('vc_'+comm):t('vc_OFF');
+  // home card
+  const show=!!(x&&c.en);$('vfd-home').hidden=!show;
+  if(show){$('vfd-kpis').innerHTML=`<div><b dir="ltr">${fmt(x.freq,1)}</b><span>Hz</span></div><div><b dir="ltr">${fmt(x.cur,1)}</b><span>A</span></div><div><b dir="ltr">${fmt(kw,1)}</b><span>kW</span></div>`;
+    $('vfd-hchips').innerHTML=chip(comm==='OK',t('vc_'+comm),comm!=='OK')+(comm==='OK'?chip(!!x.run||!!x.fault,vfdState(x),!!x.fault):'')}
+}
 /* ---------- pump detail sheet ---------- */
 let sheetI=-1;
 function openPump(i){sheetI=i;$('psheet').hidden=false;renderSheet()}
